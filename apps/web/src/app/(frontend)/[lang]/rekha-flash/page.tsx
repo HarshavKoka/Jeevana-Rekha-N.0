@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import CategoryListPage, { generateCategoryMetadata } from '@/components/CategoryListPage';
 
+export const revalidate = 60;
+
 const meta = {
     slug: 'rekha-flash',
     title: { te: 'రేఖ ఫ్లాష్', en: 'Rekha Flash' },

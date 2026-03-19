@@ -2,41 +2,49 @@ import { Article, Language } from '../types';
 
 /**
  * Build a canonical article URL following the pattern:
- * /{lang}/{YYYY-MM-DD}/{index}/{category}/{slug}
+ *   /{lang}/{YYYY-MM-DD}/{index}/{category}/{slug}
  *
- * Example: /te/2026-02-23/1/today/welcome
+ * Example: /te/2026-02-23/1/today/welcome-to-jeevana-rekha
  */
-export function buildArticleUrl(lang: Language | string, article: Article, index: number = 1, originCategory: string = 'today'): string {
-    const a = article as any;
-    if (!a) return `/${lang}`;
+export function buildArticleUrl(
+    lang: Language | string,
+    article: Article,
+    index = 1,
+    originCategory = 'today',
+): string {
+    if (!article) return `/${lang}`;
 
-    const dateStr = a.publishDate ? new Date(a.publishDate).toISOString().split('T')[0] : '2026-01-01';
-    const [year, month, day] = dateStr.split('-');
+    const dateStr = article.publishDate
+        ? new Date(article.publishDate).toISOString().split('T')[0]
+        : '2026-01-01';
 
-    // 1. Defensively extract Article Slug
+    // article.slug is a plain string (not localized in the CMS schema).
+    // Guard against Payload returning a localized object in edge cases.
+    const rawSlug: unknown = article.slug;
     let slug = 'article';
-    if (typeof a.slug === 'string' && a.slug) {
-        slug = a.slug;
-    } else if (typeof a.slug === 'object' && a.slug !== null) {
-        slug = a.slug[lang] || a.slug['te'] || Object.values(a.slug)[0] || 'article';
+    if (typeof rawSlug === 'string' && rawSlug && rawSlug !== 'undefined') {
+        slug = rawSlug;
+    } else if (rawSlug && typeof rawSlug === 'object') {
+        const localized = rawSlug as Record<string, string>;
+        slug = localized[lang as string] ?? localized['te'] ?? Object.values(localized)[0] ?? 'article';
     }
-    if (typeof slug !== 'string' || slug === 'undefined') slug = 'article';
 
-    // 2. Origin Category (e.g., today, previous-days)
-    const category = originCategory;
-
-    // 3. Final Path Construction
-    return `/${lang}/${year}-${month}-${day}/${index}/${category}/${slug}`;
+    return `/${lang}/${dateStr}/${index}/${originCategory}/${slug}`;
 }
 
 /**
- * Parse an article URL back into its parts.
+ * Parse an article URL back into its named parts.
+ * Returns null if the URL does not match the expected pattern.
  */
-export function parseArticleUrl(url: string): { lang: string; date: string; index: string; category: string; slug: string } | null {
-    // New pattern: /[lang]/[date]/[index]/[category]/[slug]
+export function parseArticleUrl(url: string): {
+    lang: string;
+    date: string;
+    index: string;
+    category: string;
+    slug: string;
+} | null {
     const match = url.match(/^\/(\w{2})\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
     if (!match) return null;
-
     return {
         lang: match[1],
         date: match[2],
@@ -47,11 +55,15 @@ export function parseArticleUrl(url: string): { lang: string; date: string; inde
 }
 
 /**
- * Build a simple hero image URL from a media object or string.
+ * Resolve the best available image URL from a Payload media object or raw string.
+ * Falls back through size variants before returning the site placeholder.
  */
-export function getImageUrl(image: any, size: 'thumbnail' | 'card' | 'hero' | 'tablet' = 'card'): string {
+export function getImageUrl(
+    image: Article['heroImage'],
+    size: 'thumbnail' | 'card' | 'hero' | 'tablet' = 'card',
+): string {
     if (typeof image === 'string') return image;
-    if (image?.sizes?.[size]?.url) return image.sizes[size].url;
+    if (image?.sizes?.[size]?.url) return image.sizes[size]!.url;
     if (image?.url) return image.url;
-    return '/assets/globe.jpeg'; // fallback
+    return '/assets/globe.jpeg';
 }

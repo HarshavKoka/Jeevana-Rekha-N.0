@@ -1,3 +1,4 @@
+import type { Payload } from 'payload';
 import { getPayload } from 'payload';
 import config from '@payload-config';
 import { Article, Category, Language } from '../types';
@@ -8,18 +9,28 @@ import { Article, Category, Language } from '../types';
  * All functions accept a locale for te/en content.
  */
 
-let cachedPayload: any = null;
+// Singleton: reuse the same Payload instance across requests
+let cachedPayload: Payload | null = null;
 
-async function getPayloadClient() {
+async function getPayloadClient(): Promise<Payload> {
     if (!cachedPayload) {
         cachedPayload = await getPayload({ config });
     }
     return cachedPayload;
 }
 
-// ─── ARTICLES ─────────────────────────────────────────
+// Shared result shape returned by Payload's find()
+type FindResult<T> = {
+    docs: T[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+};
 
-export async function getArticles(locale: Language = 'te', limit = 10, page = 1) {
+// ─── ARTICLES ──────────────────────────────────────────────────────────────
+
+/** Latest published articles, sorted by date. Use for list/card views. */
+export async function getArticles(locale: Language = 'te', limit = 10, page = 1): Promise<FindResult<Article>> {
     const payload = await getPayloadClient();
     return payload.find({
         collection: 'articles',
@@ -27,14 +38,13 @@ export async function getArticles(locale: Language = 'te', limit = 10, page = 1)
         limit,
         page,
         sort: '-publishDate',
-        depth: 2,
-        where: {
-            status: { equals: 'published' },
-        },
-    }) as Promise<{ docs: Article[]; totalDocs: number; totalPages: number; page: number }>;
+        depth: 1, // category title + heroImage url — enough for cards
+        where: { status: { equals: 'published' } },
+    }) as Promise<FindResult<Article>>;
 }
 
-export async function getArticleById(id: string, locale: Language = 'te') {
+/** Full article with all relations populated. Use for the article detail page. */
+export async function getArticleById(id: string, locale: Language = 'te'): Promise<Article | null> {
     const payload = await getPayloadClient();
     try {
         const doc = await payload.findByID({
@@ -43,13 +53,14 @@ export async function getArticleById(id: string, locale: Language = 'te') {
             locale,
             depth: 2,
         });
-        return doc as Article | null;
+        return doc as Article;
     } catch {
         return null;
     }
 }
 
-export async function getArticleBySlug(slug: string, locale: Language = 'te') {
+/** Full article by slug. Use for the article detail page. */
+export async function getArticleBySlug(slug: string, locale: Language = 'te'): Promise<Article | null> {
     const payload = await getPayloadClient();
     const result = await payload.find({
         collection: 'articles',
@@ -61,22 +72,28 @@ export async function getArticleBySlug(slug: string, locale: Language = 'te') {
             status: { equals: 'published' },
         },
     });
-    return (result.docs[0] as Article) || null;
+    return (result.docs[0] as Article) ?? null;
 }
 
-export async function getArticlesByCategory(categorySlug: string, locale: Language = 'te', limit = 12, page = 1) {
+/** Articles for a given category slug. Resolves category in one join at depth 1. */
+export async function getArticlesByCategory(
+    categorySlug: string,
+    locale: Language = 'te',
+    limit = 12,
+    page = 1,
+): Promise<FindResult<Article>> {
     const payload = await getPayloadClient();
 
-    // First get category ID by slug
     const categories = await payload.find({
         collection: 'categories',
         locale,
         limit: 1,
+        depth: 0,
         where: { slug: { equals: categorySlug } },
     });
 
     if (categories.docs.length === 0) {
-        return { docs: [] as Article[], totalDocs: 0, totalPages: 0, page: 1 };
+        return { docs: [], totalDocs: 0, totalPages: 0, page: 1 };
     }
 
     return payload.find({
@@ -85,85 +102,98 @@ export async function getArticlesByCategory(categorySlug: string, locale: Langua
         limit,
         page,
         sort: '-publishDate',
-        depth: 2,
+        depth: 1,
         where: {
             category: { equals: categories.docs[0].id },
             status: { equals: 'published' },
         },
-    }) as Promise<{ docs: Article[]; totalDocs: number; totalPages: number; page: number }>;
+    }) as Promise<FindResult<Article>>;
 }
 
-export async function getTrendingArticles(locale: Language = 'te', limit = 10) {
+/** Top trending articles for the homepage sidebar and ticker. */
+export async function getTrendingArticles(locale: Language = 'te', limit = 10): Promise<FindResult<Article>> {
     const payload = await getPayloadClient();
     return payload.find({
         collection: 'articles',
         locale,
         limit,
         sort: '-publishDate',
-        depth: 2,
+        depth: 1,
         where: {
             isTrending: { equals: true },
             status: { equals: 'published' },
         },
-    }) as Promise<{ docs: Article[]; totalDocs: number; totalPages: number; page: number }>;
+    }) as Promise<FindResult<Article>>;
 }
 
-export async function getFeaturedArticle(locale: Language = 'te') {
+/** The single featured (hero) article for the homepage. */
+export async function getFeaturedArticle(locale: Language = 'te'): Promise<Article | null> {
     const payload = await getPayloadClient();
     const result = await payload.find({
         collection: 'articles',
         locale,
         limit: 1,
         sort: '-publishDate',
-        depth: 2,
+        depth: 1,
         where: {
             isFeatured: { equals: true },
             status: { equals: 'published' },
         },
     });
-    return (result.docs[0] as Article) || null;
+    return (result.docs[0] as Article) ?? null;
 }
 
-export async function getArticlesByDate(year: string, month: string, day: string, locale: Language = 'te') {
+/** Articles published on a specific calendar date (year/month/day strings). */
+export async function getArticlesByDate(
+    year: string,
+    month: string,
+    day: string,
+    locale: Language = 'te',
+): Promise<FindResult<Article>> {
     const payload = await getPayloadClient();
     return payload.find({
         collection: 'articles',
         locale,
         sort: '-publishDate',
-        depth: 2,
+        depth: 1,
         where: {
             publishYear: { equals: year },
             publishMonth: { equals: month },
             publishDay: { equals: day },
             status: { equals: 'published' },
         },
-    }) as Promise<{ docs: Article[]; totalDocs: number; totalPages: number; page: number }>;
+    }) as Promise<FindResult<Article>>;
 }
 
-export async function getArticlesByDateString(date: string, locale: Language = 'te') {
+/** Convenience wrapper: accepts a "YYYY-MM-DD" string. */
+export async function getArticlesByDateString(date: string, locale: Language = 'te'): Promise<FindResult<Article>> {
     const [year, month, day] = date.split('-');
     return getArticlesByDate(year, month, day, locale);
 }
 
-// ─── CATEGORIES ─────────────────────────────────────────
+// ─── CATEGORIES ────────────────────────────────────────────────────────────
 
-export async function getCategories(locale: Language = 'te') {
+/** All categories, sorted by the `order` field set in the CMS. */
+export async function getCategories(locale: Language = 'te'): Promise<FindResult<Category>> {
     const payload = await getPayloadClient();
     return payload.find({
         collection: 'categories',
         locale,
         limit: 50,
+        depth: 0,
         sort: 'order',
-    }) as Promise<{ docs: Category[]; totalDocs: number; totalPages: number; page: number }>;
+    }) as Promise<FindResult<Category>>;
 }
 
-export async function getCategoryBySlug(slug: string, locale: Language = 'te') {
+/** Single category by slug. */
+export async function getCategoryBySlug(slug: string, locale: Language = 'te'): Promise<Category | null> {
     const payload = await getPayloadClient();
     const result = await payload.find({
         collection: 'categories',
         locale,
         limit: 1,
+        depth: 0,
         where: { slug: { equals: slug } },
     });
-    return (result.docs[0] as Category) || null;
+    return (result.docs[0] as Category) ?? null;
 }

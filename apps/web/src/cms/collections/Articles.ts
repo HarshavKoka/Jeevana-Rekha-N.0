@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { isAdmin } from '../access/isAdmin';
+import { isAdmin, isAdminOrEditor } from '../access/isAdmin';
 
 export const Articles: CollectionConfig = {
     slug: 'articles',
@@ -9,9 +9,9 @@ export const Articles: CollectionConfig = {
     },
     access: {
         read: () => true,
-        create: isAdmin,
-        update: isAdmin,
-        delete: isAdmin,
+        create: isAdminOrEditor,
+        update: isAdminOrEditor,
+        delete: isAdmin, // only admins can permanently delete
     },
     hooks: {
         beforeChange: [

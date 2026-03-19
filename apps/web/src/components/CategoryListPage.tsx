@@ -29,7 +29,7 @@ export default async function CategoryListPage({ categorySlug, title, descriptio
     const { docs: articles, totalDocs } = await getArticlesByCategory(categorySlug, lang, 12);
 
     return (
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-12 page-enter">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12 page-enter">
             {/* Page Header */}
             <div className="mb-12 space-y-4">
                 <SectionTitle title={title[lang]} />
@@ -68,14 +68,15 @@ export default async function CategoryListPage({ categorySlug, title, descriptio
 function ArticleGridCard({ article, lang, index = 1, category = 'today' }: { article: Article; lang: Language; index?: number; category?: string }) {
     const imageUrl = getImageUrl(article.heroImage, 'card');
     const href = buildArticleUrl(lang, article, index, category);
-    const categorySlug = typeof article.category === 'object' ? (article.category.slug as any)?.[lang] || (article.category.slug as any)?.['te'] || '' : '';
+    // category.slug is a plain string (CategorySlug), not a localized object
+    const categorySlug = typeof article.category === 'object' ? article.category.slug : '';
     const publishDate = new Date(article.publishDate);
 
     return (
         <Link href={href} className="group block hover-lift">
             <div className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-zinc-800 shadow-card">
                 {/* Image */}
-                <div className="relative aspect-[16/10] overflow-hidden">
+                <div className="relative aspect-16/10 overflow-hidden">
                     <Image
                         src={imageUrl}
                         alt={article.title}
@@ -83,7 +84,7 @@ function ArticleGridCard({ article, lang, index = 1, category = 'today' }: { art
                         className="object-cover group-hover:scale-105 transition-transform duration-700"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     {categorySlug && (
                         <div className="absolute top-3 left-3">
                             <CategoryBadge category={categorySlug} />

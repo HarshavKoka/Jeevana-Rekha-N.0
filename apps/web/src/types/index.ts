@@ -43,23 +43,53 @@ export interface MediaItem {
     };
 }
 
+// ─── Article content block types ───────────────────────────────────────────
+
+export interface HeroBlock {
+    blockType: 'hero';
+    text: string;
+}
+
+export interface ParagraphBlock {
+    blockType: 'paragraph';
+    text: Record<string, unknown>; // Lexical rich text JSON
+}
+
+export interface ImageBlock {
+    blockType: 'image';
+    image: MediaItem | string;
+    caption?: string;
+}
+
+export interface QuoteBlock {
+    blockType: 'quote';
+    text: string;
+    attribution?: string;
+}
+
+export type ContentBlock = HeroBlock | ParagraphBlock | ImageBlock | QuoteBlock;
+
+// ─── Core entities ──────────────────────────────────────────────────────────
+
 export interface Article {
     id: string;
     slug: string;
     title: string;
     excerpt: string;
-    content: any[]; // Block content from Payload
+    content: ContentBlock[];
     publishDate: string;
     publishYear: string;
     publishMonth: string;
     publishDay: string;
-    category: Category;
-    author: Author;
+    // Payload populates these as objects at depth >= 1, or returns ID strings at depth 0
+    category: Category | string;
+    author: Author | string;
     heroImage: MediaItem | string;
     keywords: { keyword: string }[];
     isTrending: boolean;
     isFeatured: boolean;
     status: 'draft' | 'published';
+    updatedAt?: string;
     seo?: {
         title?: string;
         description?: string;

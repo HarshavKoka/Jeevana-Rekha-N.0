@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import CategoryListPage, { generateCategoryMetadata } from '@/components/CategoryListPage';
 
+export const revalidate = 60;
+
 const meta = {
     slug: 'cinema',
     title: { te: 'సినిమా', en: 'Cinema' },

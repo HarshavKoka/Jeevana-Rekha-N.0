@@ -9,6 +9,9 @@ import SectionTitle from '@/components/SectionTitle';
 import CategoryBadge from '@/components/CategoryBadge';
 import VideoCard from '@/components/VideoCard';
 
+// Rebuild the homepage at most every 60 seconds (ISR)
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
     return generateSEO({

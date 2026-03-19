@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import CategoryListPage, { generateCategoryMetadata } from '@/components/CategoryListPage';
 
+export const revalidate = 60;
+
 const meta = {
     slug: 'politics',
     title: { te: 'రాజకీయాలు', en: 'Politics' },

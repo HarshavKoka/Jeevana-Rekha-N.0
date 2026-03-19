@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import { generateSEO } from '@/lib/seo';
 
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
     return generateSEO({ title: 'Privacy Policy', description: 'Our privacy policy.', lang: lang as Language, path: '/privacy' });

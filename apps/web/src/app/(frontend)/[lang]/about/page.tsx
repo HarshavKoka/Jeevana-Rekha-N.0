@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Language } from '@/types';
 import { generateSEO } from '@/lib/seo';
 
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
     return generateSEO({ title: lang === 'te' ? 'మా గురించి' : 'About Us', description: lang === 'te' ? 'JEEVANA REKHA గురించి తెలుసుకోండి.' : 'Learn about JEEVANA REKHA.', lang: lang as Language, path: '/about' });

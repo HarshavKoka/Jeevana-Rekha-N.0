@@ -4,6 +4,8 @@ import { generateSEO } from '@/lib/seo';
 import FireReportForm from '@/components/FireReportForm';
 import SectionTitle from '@/components/SectionTitle';
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
     return generateSEO({
@@ -17,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function FirePage({ params }: { params: Promise<{ lang: string }> }) {
     const { lang } = await params;
     return (
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-12 page-enter">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-12 page-enter">
             <SectionTitle title={lang === 'te' ? '🔥 ఫైర్ రిపోర్ట్' : '🔥 Fire Report'} />
             <p className="text-lg font-te text-gray-500 dark:text-zinc-400 max-w-2xl mt-4 mb-8">
                 {lang === 'te' ? 'సిటిజన్ రిపోర్టర్ — మీ చుట్టుపక్కల సమస్యలను మాకు చేరవేయండి.' : 'Citizen Reporter — Submit civic issues directly to our editorial desk.'}

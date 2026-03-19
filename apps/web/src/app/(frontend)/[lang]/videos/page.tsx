@@ -4,6 +4,8 @@ import { generateSEO } from '@/lib/seo';
 import VideoCard from '@/components/VideoCard';
 import SectionTitle from '@/components/SectionTitle';
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
     return generateSEO({
