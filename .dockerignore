@@ -1,0 +1,46 @@
+# ── Dependencies (reinstalled inside Docker) ─────────────────
+**/node_modules
+**/.pnp
+**/.pnp.js
+
+# ── Build outputs (rebuilt inside Docker) ────────────────────
+**/.next
+**/dist
+**/build
+**/out
+
+# ── Environment files (injected at runtime, never baked in) ──
+.env
+.env.local
+.env.production
+**/.env
+**/.env.local
+**/.env.production
+
+# ── Git ──────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ── OS / Editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode
+*.swp
+*.swo
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Test / CI ─────────────────────────────────────────────────
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+.github
+
+# ── Docker itself ─────────────────────────────────────────────
+Dockerfile
+docker-compose.yml
+.dockerignore
