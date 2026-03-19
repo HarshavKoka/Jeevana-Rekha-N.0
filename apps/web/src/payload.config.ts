@@ -18,9 +18,28 @@ import { seed } from './cms/seed';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// Fail fast — never start without required secrets
+const REQUIRED_ENV_VARS = ['MONGODB_URI', 'PAYLOAD_SECRET'] as const;
+for (const key of REQUIRED_ENV_VARS) {
+    if (!process.env[key]) {
+        throw new Error(`[Jeevana Rekha] Missing required environment variable: ${key}`);
+    }
+}
+
+// Allowed origins — CMS admin + API only accessible from own domain
+const allowedOrigins = process.env.NEXT_PUBLIC_SERVER_URL
+    ? [process.env.NEXT_PUBLIC_SERVER_URL]
+    : [];
+
 export default buildConfig({
     serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
-    secret: process.env.PAYLOAD_SECRET || 'CHANGE-ME-IN-PRODUCTION',
+    secret: process.env.PAYLOAD_SECRET!,
+
+    // CORS — restrict API access to own domain in production
+    cors: allowedOrigins.length > 0 ? allowedOrigins : '*',
+
+    // CSRF — protect mutations from cross-site requests
+    csrf: allowedOrigins,
 
     admin: {
         user: Users.slug,

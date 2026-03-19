@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { isAdmin, isAdminOrEditor } from '../access/isAdmin';
 
 export const FireReports: CollectionConfig = {
     slug: 'fire-reports',
@@ -6,10 +7,13 @@ export const FireReports: CollectionConfig = {
         useAsTitle: 'name',
     },
     access: {
-        read: () => true,
+        // Submissions contain personal info — only admins/editors can view them.
+        read: isAdminOrEditor,
+        // Anyone can submit a fire report (public tip submission).
         create: () => true,
+        // Reports are immutable once submitted.
         update: () => false,
-        delete: () => false,
+        delete: isAdmin,
     },
     fields: [
         {

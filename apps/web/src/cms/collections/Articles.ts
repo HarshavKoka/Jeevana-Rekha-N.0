@@ -8,10 +8,15 @@ export const Articles: CollectionConfig = {
         defaultColumns: ['title', 'category', 'publishDate', 'status', 'isTrending', 'isFeatured'],
     },
     access: {
-        read: () => true,
+        // Authenticated CMS users see all articles (drafts + published).
+        // Public (unauthenticated) visitors only see published articles.
+        read: ({ req: { user } }) => {
+            if (user) return true;
+            return { status: { equals: 'published' } };
+        },
         create: isAdminOrEditor,
         update: isAdminOrEditor,
-        delete: isAdmin, // only admins can permanently delete
+        delete: isAdmin,
     },
     hooks: {
         beforeChange: [

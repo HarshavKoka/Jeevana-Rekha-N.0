@@ -13,11 +13,15 @@ export const seed = async (payload: Payload): Promise<void> => {
     if (existingAdmin.docs.length > 0) {
         admin = existingAdmin.docs[0];
     } else {
+        const seedPassword = process.env.SEED_ADMIN_PASSWORD;
+        if (!seedPassword) {
+            throw new Error('[Seed] SEED_ADMIN_PASSWORD env var is required. Set it before running seed.');
+        }
         admin = await payload.create({
             collection: 'users',
             data: {
                 email: 'admin@jeevanarekha.com',
-                password: 'password',
+                password: seedPassword,
                 roles: ['admin'],
             },
         });
