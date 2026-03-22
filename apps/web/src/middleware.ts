@@ -54,6 +54,11 @@ export function middleware(req: NextRequest) {
             // Next.js internally routes the request to /admin/*
             if (!pathname.startsWith('/admin')) {
                 const url = req.nextUrl.clone();
+                // ALB/CloudFront terminates HTTPS and forwards requests as HTTP
+                // internally. Explicitly set the protocol from x-forwarded-proto
+                // so Payload CMS doesn't see an http:// request and redirect.
+                const fwdProto = req.headers.get('x-forwarded-proto');
+                if (fwdProto) url.protocol = `${fwdProto}:`;
                 url.pathname = `/admin${pathname === '/' ? '' : pathname}`;
                 return NextResponse.rewrite(url);
             }

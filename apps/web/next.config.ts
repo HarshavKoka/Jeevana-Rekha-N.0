@@ -22,7 +22,9 @@ const cspDirectives = [
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    ...(isDev ? [] : ["upgrade-insecure-requests"]),
+    // upgrade-insecure-requests is intentionally omitted — HTTPS is enforced at
+    // the ALB layer. Including it causes confusing redirect loops when Node.js
+    // sees internal HTTP requests from the proxy.
 ].join('; ');
 
 const securityHeaders = [
@@ -42,6 +44,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
     // Standalone output bundles only what's needed — smaller Docker image
     output: 'standalone',
+    // Don't leak the server technology in response headers
+    poweredByHeader: false,
     images: {
         remotePatterns: [
             { protocol: 'https', hostname: 'images.unsplash.com' },
