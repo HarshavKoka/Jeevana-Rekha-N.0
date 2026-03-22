@@ -7,17 +7,17 @@
 #   4. CMS admin: http://localhost:3000/admin
 # ============================================================
 
-version: '3.8'
+version: "3.8"
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner        # Build up to the final runner stage
+      target: runner # Build up to the final runner stage
     container_name: jeevanarekha_app
     ports:
-      - '3000:3000'
+      - "3000:3000"
     environment:
       # ── Payload CMS ─────────────────────────────────────
       - MONGODB_URI=${MONGODB_URI}
@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/api/health']
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

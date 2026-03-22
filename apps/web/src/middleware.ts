@@ -34,10 +34,44 @@ function isRateLimited(key: string, limit: number, windowMs: number): boolean {
 }
 
 export function middleware(req: NextRequest) {
-    const { pathname, method } = req.nextUrl;
+    const { pathname } = req.nextUrl;
+    const { method } = req;
     const ip = getClientIp(req);
+    const host = req.headers.get('host') ?? '';
 
-    // Only rate-limit mutating methods
+    // ── Subdomain routing (production only) ──────────────────────────────────
+    //
+    //  admin.jeevanarekha.com/*  →  internally rewrites to /admin/*
+    //  jeevanarekha.com/admin/*  →  301 redirect to admin.jeevanarekha.com/*
+    //
+    //  In development (/admin stays accessible at localhost:3000/admin as usual)
+    // ─────────────────────────────────────────────────────────────────────────
+    if (process.env.NODE_ENV === 'production') {
+        const isAdminSubdomain = host.startsWith('admin.');
+
+        if (isAdminSubdomain) {
+            // Transparent rewrite: browser keeps admin.jeevanarekha.com URL
+            // Next.js internally routes the request to /admin/*
+            if (!pathname.startsWith('/admin')) {
+                const url = req.nextUrl.clone();
+                url.pathname = `/admin${pathname === '/' ? '' : pathname}`;
+                return NextResponse.rewrite(url);
+            }
+            return NextResponse.next();
+        }
+
+        // If someone hits jeevanarekha.com/admin/*, send them to the subdomain
+        if (pathname.startsWith('/admin')) {
+            const proto = req.headers.get('x-forwarded-proto') ?? 'https';
+            const bare = host.replace(/^www\./, '').replace(/:\d+$/, '');
+            return NextResponse.redirect(
+                `${proto}://admin.${bare}${pathname}${req.nextUrl.search}`,
+                { status: 301 },
+            );
+        }
+    }
+
+    // ── Rate limiting ─────────────────────────────────────────────────────────
     if (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE') {
         for (const [prefix, rule] of Object.entries(RATE_RULES)) {
             if (pathname.startsWith(prefix)) {
@@ -60,5 +94,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/api/fire-reports/:path*', '/api/payload/:path*'],
+    // Run on all routes except Next.js internals and static files
+    matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

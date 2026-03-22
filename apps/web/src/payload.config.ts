@@ -26,19 +26,21 @@ for (const key of REQUIRED_ENV_VARS) {
     }
 }
 
-// Allowed origins — CMS admin + API only accessible from own domain
-const allowedOrigins = process.env.NEXT_PUBLIC_SERVER_URL
-    ? [process.env.NEXT_PUBLIC_SERVER_URL]
-    : [];
+// Both the main domain and admin subdomain must be allowed.
+// Admin panel at admin.jeevanarekha.com makes cross-origin API calls to
+// jeevanarekha.com/api — CORS and CSRF must permit that origin.
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? '';
+const adminUrl  = serverUrl ? serverUrl.replace('://', '://admin.') : '';
+const allowedOrigins = [serverUrl, adminUrl].filter(Boolean);
 
 export default buildConfig({
-    serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+    serverURL: serverUrl,
     secret: process.env.PAYLOAD_SECRET!,
 
-    // CORS — restrict API access to own domain in production
+    // CORS — allow both main domain and admin subdomain
     cors: allowedOrigins.length > 0 ? allowedOrigins : '*',
 
-    // CSRF — protect mutations from cross-site requests
+    // CSRF — protect mutations; must include admin subdomain origin
     csrf: allowedOrigins,
 
     admin: {

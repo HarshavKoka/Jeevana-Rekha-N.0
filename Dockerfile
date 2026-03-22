@@ -15,7 +15,7 @@ WORKDIR /app
 COPY apps/web/package.json apps/web/package-lock.json* ./
 
 # Install all deps (including devDeps needed for next build)
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # ── Stage 2: Build the application ──────────────────────────
 FROM node:20-alpine AS builder
@@ -33,6 +33,12 @@ COPY apps/web/ .
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+
+# Build-time env vars needed for page data collection (Payload CMS + MongoDB)
+ARG MONGODB_URI
+ARG PAYLOAD_SECRET
+ENV MONGODB_URI=$MONGODB_URI
+ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 
 # Build Next.js + Payload CMS
 # This generates .next/standalone/ because output: 'standalone' is set

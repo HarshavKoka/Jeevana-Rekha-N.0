@@ -40,7 +40,7 @@ export async function getArticles(locale: Language = 'te', limit = 10, page = 1)
         sort: '-publishDate',
         depth: 1, // category title + heroImage url — enough for cards
         where: { status: { equals: 'published' } },
-    }) as Promise<FindResult<Article>>;
+    }) as unknown as Promise<FindResult<Article>>;
 }
 
 /** Full article with all relations populated. Use for the article detail page. */
@@ -107,7 +107,7 @@ export async function getArticlesByCategory(
             category: { equals: categories.docs[0].id },
             status: { equals: 'published' },
         },
-    }) as Promise<FindResult<Article>>;
+    }) as unknown as Promise<FindResult<Article>>;
 }
 
 /** Top trending articles for the homepage sidebar and ticker. */
@@ -123,7 +123,7 @@ export async function getTrendingArticles(locale: Language = 'te', limit = 10): 
             isTrending: { equals: true },
             status: { equals: 'published' },
         },
-    }) as Promise<FindResult<Article>>;
+    }) as unknown as Promise<FindResult<Article>>;
 }
 
 /** The single featured (hero) article for the homepage. */
@@ -162,7 +162,7 @@ export async function getArticlesByDate(
             publishDay: { equals: day },
             status: { equals: 'published' },
         },
-    }) as Promise<FindResult<Article>>;
+    }) as unknown as Promise<FindResult<Article>>;
 }
 
 /** Convenience wrapper: accepts a "YYYY-MM-DD" string. */
@@ -182,7 +182,7 @@ export async function getCategories(locale: Language = 'te'): Promise<FindResult
         limit: 50,
         depth: 0,
         sort: 'order',
-    }) as Promise<FindResult<Category>>;
+    }) as unknown as Promise<FindResult<Category>>;
 }
 
 /** Single category by slug. */
