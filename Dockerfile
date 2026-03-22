@@ -34,11 +34,23 @@ COPY apps/web/ .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build-time env vars needed for page data collection (Payload CMS + MongoDB)
+# Build-time env vars — two categories:
+#
+#  1. NEXT_PUBLIC_* vars are embedded into the JS bundle by the Next.js compiler.
+#     They MUST be passed here as build args, not at runtime.
+#
+#  2. MONGODB_URI + PAYLOAD_SECRET are needed because Payload CMS connects to
+#     MongoDB during `next build` to pre-render ISR pages.
+#
 ARG MONGODB_URI
 ARG PAYLOAD_SECRET
+ARG NEXT_PUBLIC_SERVER_URL
+ARG NEXT_PUBLIC_GA_ID
+
 ENV MONGODB_URI=$MONGODB_URI
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
+ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 
 # Build Next.js + Payload CMS
 # This generates .next/standalone/ because output: 'standalone' is set
