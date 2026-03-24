@@ -50,15 +50,19 @@ export function middleware(req: NextRequest) {
         const isAdminSubdomain = host.startsWith('admin.');
 
         if (isAdminSubdomain) {
-            // Transparent rewrite: browser keeps admin.jeevanarekha.com URL
-            // Next.js internally routes the request to /admin/*
+            // API calls from Payload admin JS stay at /api/* — do not rewrite.
+            // Rewriting /api/foo → /admin/api/foo would break all CMS data calls.
+            if (pathname.startsWith('/api/')) {
+                return NextResponse.next();
+            }
+
+            // Transparent rewrite: browser keeps admin.jeevanarekha.com URL.
+            // Only change the pathname — never touch the protocol on a rewrite
+            // URL. Changing it causes Next.js to treat it as an external proxy
+            // instead of an internal route, which silently falls back to the
+            // frontend root page and redirects to /te.
             if (!pathname.startsWith('/admin')) {
                 const url = req.nextUrl.clone();
-                // ALB/CloudFront terminates HTTPS and forwards requests as HTTP
-                // internally. Explicitly set the protocol from x-forwarded-proto
-                // so Payload CMS doesn't see an http:// request and redirect.
-                const fwdProto = req.headers.get('x-forwarded-proto');
-                if (fwdProto) url.protocol = `${fwdProto}:`;
                 url.pathname = `/admin${pathname === '/' ? '' : pathname}`;
                 return NextResponse.rewrite(url);
             }
