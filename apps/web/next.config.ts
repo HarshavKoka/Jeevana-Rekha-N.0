@@ -57,6 +57,25 @@ const nextConfig: NextConfig = {
     experimental: {
         reactCompiler: false,
     },
+    async rewrites() {
+        // Map default-language (Telugu) URLs to /te/* so Next.js [lang] routing works.
+        //
+        // beforeFiles: rewrite / → /te before filesystem check (root page returns null).
+        // fallback: rewrite any unmatched path → /te/* as last resort.
+        //   /en/*, /api/*, /admin/* are matched by their own routes, so they
+        //   never reach the fallback — no explicit exclusion needed.
+        //
+        // These are purely internal — no HTTP request, no middleware loop.
+        return {
+            beforeFiles: [
+                { source: '/', destination: '/te' },
+            ],
+            afterFiles: [],
+            fallback: [
+                { source: '/:path*', destination: '/te/:path*' },
+            ],
+        };
+    },
     async headers() {
         return [
             {

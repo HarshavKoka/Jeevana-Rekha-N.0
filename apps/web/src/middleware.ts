@@ -83,31 +83,20 @@ export function middleware(req: NextRequest) {
         }
     }
 
-    // ── Default-language rewriting ────────────────────────────────────────────
+    // ── Default-language redirect ─────────────────────────────────────────────
     //
     //  Telugu is the default language — no /te prefix in the visible URL.
-    //  English uses /en prefix explicitly.
+    //  Old /te/* URLs → 308 redirect to /* (canonical clean URL).
     //
-    //  1. Old /te/* URLs → permanent redirect to /* (canonical clean URL)
-    //  2. Any path that is not /en, /api, /admin, /robots.txt, /sitemap.xml
-    //     → internally rewrite to /te/* so Next.js [lang] routes are served.
+    //  The rewrite from /* → /te/* (so Next.js [lang] routes are served) is
+    //  handled in next.config.ts rewrites, which are always processed as truly
+    //  internal server-side rewrites — no new HTTP request, no middleware loop.
     // ─────────────────────────────────────────────────────────────────────────
     if (pathname.startsWith('/te')) {
         const newPath = pathname.slice(3) || '/';
         const url = req.nextUrl.clone();
         url.pathname = newPath;
         return NextResponse.redirect(url, { status: 308 });
-    }
-
-    const SKIP_PREFIXES = ['/en', '/api', '/admin'];
-    const SKIP_EXACT = ['/robots.txt', '/sitemap.xml'];
-    if (
-        !SKIP_PREFIXES.some(p => pathname.startsWith(p)) &&
-        !SKIP_EXACT.includes(pathname)
-    ) {
-        const url = req.nextUrl.clone();
-        url.pathname = '/te' + (pathname === '/' ? '' : pathname);
-        return NextResponse.rewrite(url);
     }
 
     // ── Rate limiting ─────────────────────────────────────────────────────────
