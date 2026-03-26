@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { SOCIAL_LINKS, NAV_ITEMS } from '../lib/constants';
+import { langPath } from '../lib/url';
 
 export default function Footer() {
     const { language } = useLanguage();
@@ -25,7 +26,7 @@ export default function Footer() {
                 {/* ROW 1: BRAND & MISSION */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 mb-12">
                     <div className="space-y-6">
-                        <Link href={`/${language}`} className="text-3xl font-black font-te text-zinc-900 dark:text-white inline-block hover:opacity-90 transition-opacity tracking-tighter">
+                        <Link href={langPath(language, '/')} className="text-3xl font-black font-te text-zinc-900 dark:text-white inline-block hover:opacity-90 transition-opacity tracking-tighter">
                             JEEVANA <span className="text-primary font-black">REKHA</span>
                         </Link>
                         <p className="max-w-md text-lg leading-relaxed font-te text-zinc-500 dark:text-zinc-400">
@@ -82,7 +83,7 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {NAV_ITEMS.filter(i => !i.isFlash).slice(0, 4).map((item) => (
                                 <li key={item.href}>
-                                    <Link href={`/${language}${item.href}`} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
+                                    <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
                                         {item.label[language]}
                                     </Link>
                                 </li>
@@ -94,7 +95,7 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {NAV_ITEMS.filter(i => !i.isFlash).slice(4).map((item) => (
                                 <li key={item.href}>
-                                    <Link href={`/${language}${item.href}`} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
+                                    <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
                                         {item.label[language]}
                                     </Link>
                                 </li>
@@ -108,7 +109,7 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {policyLinks.slice(0, 3).map((item) => (
                                 <li key={item.href}>
-                                    <Link href={`/${language}${item.href}`} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
+                                    <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
                                         {item.label[language]}
                                     </Link>
                                 </li>
@@ -122,7 +123,7 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {policyLinks.slice(3).map((item) => (
                                 <li key={item.href}>
-                                    <Link href={`/${language}${item.href}`} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors">
+                                    <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors">
                                         {item.label[language]}
                                     </Link>
                                 </li>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Language } from '@/types';
 import { getArticles, getTrendingArticles, getFeaturedArticle, getCategories } from '@/lib/payload-client';
 import { generateSEO } from '@/lib/seo';
-import { buildArticleUrl, getImageUrl } from '@/lib/url';
+import { buildArticleUrl, getImageUrl, langPath } from '@/lib/url';
 import SectionTitle from '@/components/SectionTitle';
 import CategoryBadge from '@/components/CategoryBadge';
 import VideoCard from '@/components/VideoCard';
@@ -48,7 +48,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                 <div className="grid grid-cols-1 lg:grid-cols-[7.5fr_2.5fr] 2xl:grid-cols-[7.8fr_2.2fr] gap-12 xl:gap-20">
                     {/* TODAY SECTION (70%) */}
                     <div className="space-y-8">
-                        <Link href={`/${lang}/${todayStr}/today`} className="group flex items-center gap-4 border-b-4 border-primary pb-2 w-fit">
+                        <Link href={langPath(lang, `/${todayStr}/today`)} className="group flex items-center gap-4 border-b-4 border-primary pb-2 w-fit">
                             <span className="text-4xl md:text-5xl font-black font-te tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
                                 {lang === 'te' ? 'నేడు' : 'TODAY'}
                             </span>
@@ -146,7 +146,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                     <div className="grid grid-cols-1 lg:grid-cols-[6fr_4fr] 2xl:grid-cols-[6.5fr_3.5fr] gap-16 xl:gap-24">
                         {/* PREVIOUS DAY (60%) */}
                         <div className="space-y-10">
-                            <Link href={`/${lang}/${todayStr}/previous-days`} className="group flex items-center gap-4">
+                            <Link href={langPath(lang, `/${todayStr}/previous-days`)} className="group flex items-center gap-4">
                                 <h2 className="text-3xl md:text-4xl font-black font-te tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
                                     {lang === 'te' ? 'గత' : 'PREVIOUS'} <span className="text-primary italic">{lang === 'te' ? 'రోజులు' : 'DAYS'}</span>
                                 </h2>
@@ -168,7 +168,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
                         {/* WEEKLY ROUNDUP (40%) */}
                         <div className="space-y-10">
-                            <Link href={`/${lang}/weekly-roundup`} className="group flex items-center justify-between bg-zinc-900 dark:bg-zinc-800 text-white p-8 rounded-[3rem] shadow-2xl hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all border-b-8 border-primary">
+                            <Link href={langPath(lang, '/weekly-roundup')} className="group flex items-center justify-between bg-zinc-900 dark:bg-zinc-800 text-white p-8 rounded-[3rem] shadow-2xl hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all border-b-8 border-primary">
                                 <div>
                                     <h2 className="text-3xl font-black font-te tracking-tighter uppercase leading-none">
                                         {lang === 'te' ? 'వారపు' : 'WEEKLY'}<br /><span className="text-primary italic">{lang === 'te' ? 'సమీక్ష' : 'ROUNDUP'}</span>
@@ -206,7 +206,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                     <h2 className="text-4xl md:text-5xl font-black font-te tracking-tighter text-zinc-900 dark:text-white uppercase transition-all duration-500">
                         {lang === 'te' ? 'రేఖా' : 'REKHA'} <span className="text-red-600">{lang === 'te' ? 'వాచ్' : 'WATCH'}</span>
                     </h2>
-                    <Link href={`/${lang}/videos`} className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-primary transition-colors">
+                    <Link href={langPath(lang, '/videos')} className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-primary transition-colors">
                         {lang === 'te' ? 'అన్ని వీడియోలు చూడండి' : 'View All Videos'}
                     </Link>
                 </div>

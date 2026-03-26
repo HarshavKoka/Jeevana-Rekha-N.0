@@ -8,6 +8,7 @@ import { Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { NAV_ITEMS } from '../lib/constants';
+import { langPath } from '../lib/url';
 import MobileDrawer from './MobileDrawer';
 import RekhaFlash from './RekhaFlash';
 
@@ -71,7 +72,7 @@ export default function Header({ lang }: { lang: string }) {
 
           {/* CENTER: LOGO */}
           <div className="flex-1 flex justify-center">
-            <Link href={`/${language}`} className="text-3xl md:text-4xl font-black font-te flex items-center gap-2 text-zinc-900 dark:text-white hover:opacity-90 transition-all duration-700 transform-gpu hover:scale-[1.02] tracking-tight group">
+            <Link href={langPath(language, '/')} className="text-3xl md:text-4xl font-black font-te flex items-center gap-2 text-zinc-900 dark:text-white hover:opacity-90 transition-all duration-700 transform-gpu hover:scale-[1.02] tracking-tight group">
               JEEVANA <span className="text-primary font-black uppercase group-hover:scale-105 transition-transform duration-700 inline-block">REKHA</span>
             </Link>
           </div>
@@ -104,7 +105,7 @@ export default function Header({ lang }: { lang: string }) {
           <div className="flex items-center gap-12 xl:gap-16">
             <RekhaFlash />
             {regularItems.map((item) => {
-              const fullHref = `/${language}${item.href}`;
+              const fullHref = langPath(language, item.href);
               const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
               return (
                 <Link

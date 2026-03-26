@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
+import { langPath } from '../lib/url';
 
 interface FlashHeadline {
     id: string;
@@ -59,7 +60,7 @@ export default function RekhaFlash() {
         <div className="flex items-center gap-3 shrink-0">
             {/* Blinking Red Dot + Label */}
             <Link
-                href={`/${language}/rekha-flash`}
+                href={langPath(language, '/rekha-flash')}
                 className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105"
             >
                 <span className="relative flex h-3 w-3">

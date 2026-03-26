@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import CategoryBadge from './CategoryBadge';
+import { langPath } from '../lib/url';
 
 interface HeroArticleProps {
     lang: string;
@@ -14,7 +15,7 @@ interface HeroArticleProps {
 
 export default function HeroArticle({ lang, slug, category, title, excerpt, date, image }: HeroArticleProps) {
     return (
-        <Link href={`/${lang}/article/${slug}`} className="group block relative overflow-hidden rounded-[2.5rem] shadow-xl transition-all duration-500 hover:shadow-2xl">
+        <Link href={langPath(lang, `/article/${slug}`)} className="group block relative overflow-hidden rounded-[2.5rem] shadow-xl transition-all duration-500 hover:shadow-2xl">
             <div className="relative aspect-[16/10] md:aspect-[16/9] w-full overflow-hidden rounded-[2.5rem]">
                 {/* Image */}
                 <div className="absolute inset-0 bg-gray-100 dark:bg-zinc-900">

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import CategoryBadge from './CategoryBadge';
+import { langPath } from '../lib/url';
 
 interface ArticleCardProps {
     lang: string;
@@ -16,7 +17,7 @@ interface ArticleCardProps {
 export default function ArticleCard({ lang, slug, category, title, excerpt, date, image, isSidebar = false }: ArticleCardProps) {
     return (
         <Link
-            href={`/${lang}/article/${slug}`}
+            href={langPath(lang, `/article/${slug}`)}
             className="group block bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-gray-100 dark:border-zinc-800"
         >
             {/* Top: Image */}

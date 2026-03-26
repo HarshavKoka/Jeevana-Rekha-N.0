@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { X, Moon, Sun } from 'lucide-react';
 import { NAV_ITEMS } from '../lib/constants';
 import { useLanguage } from '../context/LanguageContext';
+import { langPath } from '../lib/url';
 import { useTheme } from '../context/ThemeContext';
 import { usePathname } from 'next/navigation';
 
@@ -44,7 +45,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-zinc-800">
-                        <Link href={`/${language}`} className="text-2xl font-black font-te tracking-tighter" onClick={onClose}>
+                        <Link href={langPath(language, '/')} className="text-2xl font-black font-te tracking-tighter" onClick={onClose}>
                             JEEVANA <span className="text-primary font-black uppercase">REKHA</span>
                         </Link>
                         <button
@@ -58,7 +59,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
                     {/* Rekha Flash (Mobile) */}
                     <Link
-                        href={`/${language}/rekha-flash`}
+                        href={langPath(language, '/rekha-flash')}
                         className="flex items-center gap-3 px-6 py-4 bg-red-50 dark:bg-red-950/20 border-b border-gray-100 dark:border-zinc-800"
                         onClick={onClose}
                     >
@@ -75,7 +76,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <nav className="flex-1 overflow-y-auto p-6">
                         <ul className="space-y-1">
                             {NAV_ITEMS.filter(item => !item.isFlash).map((item) => {
-                                const fullHref = `/${language}${item.href}`;
+                                const fullHref = langPath(language, item.href);
                                 const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
                                 return (
                                     <li key={item.href}>

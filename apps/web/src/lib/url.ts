@@ -1,10 +1,25 @@
 import { Article, Language } from '../types';
 
 /**
- * Build a canonical article URL following the pattern:
- *   /{lang}/{YYYY-MM-DD}/{index}/{category}/{slug}
+ * Returns the URL prefix for a given language.
+ * Telugu is the default language — no prefix in the URL.
+ * English uses /en prefix.
  *
- * Example: /te/2026-02-23/1/today/welcome-to-jeevana-rekha
+ * Examples:
+ *   langPath('te', '/trending')  → '/trending'
+ *   langPath('en', '/trending')  → '/en/trending'
+ *   langPath('te', '/')          → '/'
+ *   langPath('en', '/')          → '/en'
+ */
+export function langPath(lang: Language | string, path: string): string {
+    if (lang === 'te') return path;
+    return `/${lang}${path === '/' ? '' : path}`;
+}
+
+/**
+ * Build a canonical article URL.
+ * Telugu (default): /{YYYY-MM-DD}/{index}/{category}/{slug}
+ * English:          /en/{YYYY-MM-DD}/{index}/{category}/{slug}
  */
 export function buildArticleUrl(
     lang: Language | string,
@@ -12,7 +27,7 @@ export function buildArticleUrl(
     index = 1,
     originCategory = 'today',
 ): string {
-    if (!article) return `/${lang}`;
+    if (!article) return langPath(lang, '/');
 
     const dateStr = article.publishDate
         ? new Date(article.publishDate).toISOString().split('T')[0]
@@ -29,12 +44,12 @@ export function buildArticleUrl(
         slug = localized[lang as string] ?? localized['te'] ?? Object.values(localized)[0] ?? 'article';
     }
 
-    return `/${lang}/${dateStr}/${index}/${originCategory}/${slug}`;
+    return langPath(lang, `/${dateStr}/${index}/${originCategory}/${slug}`);
 }
 
 /**
  * Parse an article URL back into its named parts.
- * Returns null if the URL does not match the expected pattern.
+ * Handles both /en/date/... (English) and /date/... (Telugu default).
  */
 export function parseArticleUrl(url: string): {
     lang: string;
@@ -43,15 +58,22 @@ export function parseArticleUrl(url: string): {
     category: string;
     slug: string;
 } | null {
-    const match = url.match(/^\/(\w{2})\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
-    if (!match) return null;
-    return {
-        lang: match[1],
-        date: match[2],
-        index: match[3],
-        category: match[4],
-        slug: match[5],
-    };
+    // English: /en/date/index/category/slug
+    const enMatch = url.match(/^\/en\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
+    if (enMatch) {
+        return { lang: 'en', date: enMatch[1], index: enMatch[2], category: enMatch[3], slug: enMatch[4] };
+    }
+    // Legacy /te/... redirect — should not appear in canonical URLs but handle gracefully
+    const teMatch = url.match(/^\/te\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
+    if (teMatch) {
+        return { lang: 'te', date: teMatch[1], index: teMatch[2], category: teMatch[3], slug: teMatch[4] };
+    }
+    // Telugu default: /date/index/category/slug (no lang prefix)
+    const defaultMatch = url.match(/^\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
+    if (defaultMatch) {
+        return { lang: 'te', date: defaultMatch[1], index: defaultMatch[2], category: defaultMatch[3], slug: defaultMatch[4] };
+    }
+    return null;
 }
 
 /**
