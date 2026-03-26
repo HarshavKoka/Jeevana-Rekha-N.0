@@ -83,6 +83,13 @@ export function middleware(req: NextRequest) {
         }
     }
 
+    // ── Root language redirect ────────────────────────────────────────────────
+    // Redirect / → /te in middleware (Edge runtime) so it is consistent
+    // across all environments and not subject to static pre-render quirks.
+    if (pathname === '/') {
+        return NextResponse.redirect(new URL('/te', req.url), { status: 307 });
+    }
+
     // ── Rate limiting ─────────────────────────────────────────────────────────
     if (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE') {
         for (const [prefix, rule] of Object.entries(RATE_RULES)) {
