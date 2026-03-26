@@ -37,7 +37,10 @@ export function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const { method } = req;
     const ip = getClientIp(req);
-    const host = req.headers.get('host') ?? '';
+    // CloudFront replaces the Host header with the ALB origin domain.
+    // The original viewer hostname is preserved in X-Forwarded-Host.
+    // We must read that first, otherwise subdomain detection always fails.
+    const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
 
     // ── Subdomain routing (production only) ──────────────────────────────────
     //
