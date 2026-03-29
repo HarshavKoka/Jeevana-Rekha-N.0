@@ -68,7 +68,7 @@ export default function RekhaFlash() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
                 </span>
                 <span className={`font-black uppercase tracking-[0.14em] text-red-600 group-hover:text-red-700 transition-all duration-300 whitespace-nowrap text-base`}>
-                    {language === 'te' ? 'రేఖ ఫ్లాష్' : 'REKHA FLASH'}
+                    రేఖ ఫ్లాష్
                 </span>
             </Link>
         </div>

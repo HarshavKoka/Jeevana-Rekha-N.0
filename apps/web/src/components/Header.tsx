@@ -72,31 +72,20 @@ export default function Header({ lang }: { lang: string }) {
 
           {/* CENTER: LOGO */}
           <div className="flex-1 flex justify-center">
-            <Link href={langPath(language, '/')} className="text-3xl md:text-4xl font-black font-te flex items-center gap-2 text-zinc-900 dark:text-white hover:opacity-90 transition-all duration-700 transform-gpu hover:scale-[1.02] tracking-tight group">
-              JEEVANA <span className="text-primary font-black uppercase group-hover:scale-105 transition-transform duration-700 inline-block">REKHA</span>
+            <Link href={langPath(language, '/')} className="relative h-10 md:h-12 w-48 md:w-64 hover:opacity-90 transition-all duration-700 transform-gpu hover:scale-[1.02] flex items-center">
+              <Image
+                src="/assets/logo.png"
+                alt="Jeevana Rekha Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </Link>
           </div>
 
-          {/* RIGHT: ELITE LANGUAGE TOGGLE with globe icon */}
+          {/* RIGHT: EMPTY (Reserved for alignment/future use) */}
           <div className="flex-1 flex justify-end">
-            <button
-              onClick={toggleLanguage}
-              className="group flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-zinc-800 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-all duration-500 shadow-sm bg-white dark:bg-zinc-950"
-              aria-label="Change Language"
-            >
-              <div className="relative w-6 h-6 overflow-hidden rounded-full border border-zinc-100 dark:border-zinc-800 group-hover:scale-110 transition-transform duration-500">
-                <Image
-                  src="/assets/globe.jpeg"
-                  alt="Language"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <span className={`font-black uppercase tracking-[0.1em] text-sm transition-all duration-500 ${language === 'te' ? 'text-zinc-700 dark:text-zinc-200' : 'text-primary'
-                }`}>
-                {language === 'te' ? 'English' : 'తెలుగు'}
-              </span>
-            </button>
+            {/* Removed language toggle as requested */}
           </div>
         </div>
 

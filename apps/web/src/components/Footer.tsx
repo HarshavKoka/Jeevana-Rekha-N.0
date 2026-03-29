@@ -10,11 +10,11 @@ export default function Footer() {
     const { language } = useLanguage();
 
     const policyLinks = [
-        { label: { te: 'మా గురించి', en: 'About Us' }, href: '/about' },
-        { label: { te: 'సంప్రదించండి', en: 'Contact' }, href: '/contact' },
-        { label: { te: 'ఎడిటోరియల్ పాలసీ', en: 'Editorial Policy' }, href: '/editorial-policy' },
-        { label: { te: 'ప్రైవసీ పాలసీ', en: 'Privacy Policy' }, href: '/privacy' },
-        { label: { te: 'నిబంధనలు & షరతులు', en: 'Terms & Conditions' }, href: '/terms' },
+        { label: 'మా గురించి', href: '/about' },
+        { label: 'సంప్రదించండి', href: '/contact' },
+        { label: 'ఎడిటోరియల్ పాలసీ', href: '/editorial-policy' },
+        { label: 'ప్రైవసీ పాలసీ', href: '/privacy' },
+        { label: 'నిబంధనలు & షరతులు', href: '/terms' },
     ];
 
     return (
@@ -30,9 +30,7 @@ export default function Footer() {
                             JEEVANA <span className="text-primary font-black">REKHA</span>
                         </Link>
                         <p className="max-w-md text-lg leading-relaxed font-te text-zinc-500 dark:text-zinc-400">
-                            {language === 'te'
-                                ? 'నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.'
-                                : 'A trusted digital news platform committed to ethical journalism and truth.'}
+                            నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.
                         </p>
                         <div className="flex gap-3">
                             {[
@@ -56,19 +54,19 @@ export default function Footer() {
                     </div>
                     <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-6 border border-primary/10 dark:border-primary/20 max-w-md ml-auto">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-primary mb-3">
-                            {language === 'te' ? 'న్యూస్ లెటర్' : 'Newsletter'}
+                            న్యూస్ లెటర్
                         </h4>
                         <p className="text-xs font-te mb-5 text-zinc-600 dark:text-zinc-300">
-                            {language === 'te' ? 'తాజా వార్తలు మరియు అప్‌డేట్‌లను పొందండి.' : 'Get the latest news and updates delivered to your inbox.'}
+                            తాజా వార్తలు మరియు అప్‌డేట్‌లను పొందండి.
                         </p>
                         <div className="flex gap-2">
                             <input
                                 type="email"
-                                placeholder={language === 'te' ? 'మీ ఇమెయిల్' : 'Your Email'}
+                                placeholder="మీ ఇమెయిల్"
                                 className="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-te"
                             />
                             <button className="bg-primary text-white rounded-xl px-4 py-2 text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm">
-                                {language === 'te' ? 'సబ్స్క్రైబ్' : 'Subscribe'}
+                                సబ్స్క్రైబ్
                             </button>
                         </div>
                     </div>
@@ -78,7 +76,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-12 py-12 border-t border-zinc-200 dark:border-zinc-900">
                     <div className="space-y-6">
                         <h4 className="text-[13px] font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
-                            {language === 'te' ? 'విభాగాలు' : 'Categories'}
+                            విభాగాలు
                         </h4>
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {NAV_ITEMS.filter(i => !i.isFlash).slice(0, 4).map((item) => (
@@ -104,13 +102,13 @@ export default function Footer() {
                     </div>
                     <div className="space-y-6">
                         <h4 className="text-[13px] font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
-                            {language === 'te' ? 'మా కథ' : 'Our Story'}
+                            మా కథ
                         </h4>
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {policyLinks.slice(0, 3).map((item) => (
                                 <li key={item.href}>
                                     <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
-                                        {item.label[language]}
+                                        {item.label}
                                     </Link>
                                 </li>
                             ))}
@@ -118,13 +116,13 @@ export default function Footer() {
                     </div>
                     <div className="space-y-6">
                         <h4 className="text-xs font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
-                            {language === 'te' ? 'పాలసీలు' : 'Policies'}
+                            పాలసీలు
                         </h4>
                         <ul className="space-y-4 text-sm font-bold font-te">
                             {policyLinks.slice(3).map((item) => (
                                 <li key={item.href}>
                                     <Link href={langPath(language, item.href)} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors">
-                                        {item.label[language]}
+                                        {item.label}
                                     </Link>
                                 </li>
                             ))}
@@ -140,10 +138,10 @@ export default function Footer() {
                     </div>
                     <div className="text-center md:text-right space-y-2">
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
-                            © 2026 JEEVANA REKHA. {language === 'te' ? 'అన్ని హక్కులు ప్రత్యేకించబడినవి.' : 'All Rights Reserved.'}
+                            © 2026 JEEVANA REKHA. అన్ని హక్కులు ప్రత్యేకించబడినవి.
                         </p>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">
-                            {language === 'te' ? 'రూపకల్పన' : 'Designed by'} <span className="text-zinc-900 dark:text-white">VIJAYI SOFTWARE</span>
+                            రూపకల్పన <span className="text-zinc-900 dark:text-white">VIJAYI SOFTWARE</span>
                         </p>
                     </div>
                 </div>

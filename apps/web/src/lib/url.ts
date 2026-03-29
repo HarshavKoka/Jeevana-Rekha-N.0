@@ -12,8 +12,8 @@ import { Article, Language } from '../types';
  *   langPath('en', '/')          → '/en'
  */
 export function langPath(lang: Language | string, path: string): string {
-    if (lang === 'te') return path;
-    return `/${lang}${path === '/' ? '' : path}`;
+    // Language selection is removed, everything defaults to Telugu at the root level.
+    return path;
 }
 
 /**
@@ -87,5 +87,5 @@ export function getImageUrl(
     if (typeof image === 'string') return image;
     if (image?.sizes?.[size]?.url) return image.sizes[size]!.url;
     if (image?.url) return image.url;
-    return '/assets/globe.jpeg';
+    return '/assets/logo.png';
 }

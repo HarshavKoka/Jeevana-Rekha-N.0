@@ -2,36 +2,36 @@ import { NavItem } from '../types';
 
 export const NAV_ITEMS: NavItem[] = [
     {
-        label: { te: 'రేఖ ఫ్లాష్', en: 'Rekha Flash' },
+        label: { te: 'రేఖ ఫ్లాష్', en: '' },
         href: '/rekha-flash',
         isFlash: true,
     },
     {
-        label: { te: 'ట్రెండింగ్', en: 'Trending' },
+        label: { te: 'ట్రెండింగ్', en: '' },
         href: '/trending',
     },
     {
-        label: { te: 'ఫైర్', en: 'Fire' },
+        label: { te: 'ఫైర్', en: '' },
         href: '/fire',
     },
     {
-        label: { te: 'సినిమా', en: 'Cinema' },
+        label: { te: 'సినిమా', en: '' },
         href: '/cinema',
     },
     {
-        label: { te: 'స్పోర్ట్స్', en: 'Sports' },
+        label: { te: 'స్పోర్ట్స్', en: '' },
         href: '/sports',
     },
     {
-        label: { te: 'రాజకీయాలు', en: 'Politics' },
+        label: { te: 'రాజకీయాలు', en: '' },
         href: '/politics',
     },
     {
-        label: { te: 'బిజినెస్', en: 'Business' },
+        label: { te: 'బిజినెస్', en: '' },
         href: '/business',
     },
     {
-        label: { te: 'ఉద్యోగాలు', en: 'Jobs' },
+        label: { te: 'ఉద్యోగాలు', en: '' },
         href: '/jobs',
     },
 ];
@@ -49,7 +49,7 @@ export const SITE_CONFIG = {
     domain: 'jeevanarekha.com',
     description: {
         te: 'నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.',
-        en: 'A trusted digital news platform committed to ethical journalism and public interest.',
+        en: '',
     },
     author: 'Vijayi Software',
 };

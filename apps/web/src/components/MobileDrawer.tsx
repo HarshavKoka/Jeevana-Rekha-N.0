@@ -45,8 +45,14 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-zinc-800">
-                        <Link href={langPath(language, '/')} className="text-2xl font-black font-te tracking-tighter" onClick={onClose}>
-                            JEEVANA <span className="text-primary font-black uppercase">REKHA</span>
+                        <Link href={langPath(language, '/')} className="relative h-8 w-40 hover:opacity-90 transition-opacity" onClick={onClose}>
+                            <Image
+                                src="/assets/logo.png"
+                                alt="Jeevana Rekha Logo"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
                         </Link>
                         <button
                             onClick={onClose}
@@ -68,7 +74,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
                         </span>
                         <span className="text-sm font-black uppercase tracking-[0.15em] text-red-600">
-                            {language === 'te' ? 'రేఖ ఫ్లాష్' : 'REKHA FLASH'}
+                            రేఖ ఫ్లాష్
                         </span>
                     </Link>
 
@@ -115,22 +121,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                 </div>
                             </button>
                         </div>
-                        <div className="flex items-center justify-between group">
-                            <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                                {language === 'te' ? 'భాష' : 'Language'}
-                            </span>
-                            <button
-                                onClick={toggleLanguage}
-                                className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-primary/50 transition-all duration-300 shadow-sm"
-                            >
-                                <div className="relative w-5 h-5 overflow-hidden rounded-full border border-gray-100 dark:border-zinc-800">
-                                    <Image src="/assets/globe.jpeg" alt="Language" fill className="object-cover" />
-                                </div>
-                                <span className={`font-black uppercase text-xs tracking-wider ${language === 'te' ? 'text-zinc-500' : 'text-primary'}`}>
-                                    {language === 'te' ? 'EN' : 'తెలుగు'}
-                                </span>
-                            </button>
-                        </div>
+                        {/* Removed language toggle as requested */}
                     </div>
                 </div>
             </div>

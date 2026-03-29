@@ -73,7 +73,6 @@ export default buildConfig({
     localization: {
         locales: [
             { label: 'Telugu', code: 'te' },
-            { label: 'English', code: 'en' },
         ],
         defaultLocale: 'te',
         fallback: true,

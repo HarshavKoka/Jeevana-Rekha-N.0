@@ -17,35 +17,18 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode, initialLang
     const router = useRouter();
     const pathname = usePathname();
 
-    // Keep language state in sync with the visible URL.
-    // Telugu is the default (no prefix); English uses /en prefix.
+    // Language selection is removed, everything defaults to Telugu.
     useEffect(() => {
-        const langFromUrl: Language = pathname.startsWith('/en') ? 'en' : 'te';
-        setLanguageState(langFromUrl);
-        localStorage.setItem('lang', langFromUrl);
-    }, [pathname]);
+        setLanguageState('te');
+        localStorage.setItem('lang', 'te');
+    }, []);
 
     const setLanguage = (lang: Language) => {
-        setLanguageState(lang);
-        localStorage.setItem('lang', lang);
-
-        if (lang === 'en') {
-            // Currently on Telugu (no prefix) → prepend /en
-            if (!pathname.startsWith('/en')) {
-                router.push('/en' + (pathname === '/' ? '' : pathname));
-            }
-        } else {
-            // Currently on English → strip /en prefix
-            if (pathname.startsWith('/en')) {
-                const stripped = pathname.slice(3) || '/';
-                router.push(stripped);
-            }
-        }
+        // No-op
     };
 
     const toggleLanguage = () => {
-        const newLang = language === 'te' ? 'en' : 'te';
-        setLanguage(newLang);
+        // No-op
     };
 
     return (

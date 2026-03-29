@@ -84,20 +84,9 @@ export function middleware(req: NextRequest) {
     }
 
     // ── Default-language redirect ─────────────────────────────────────────────
-    //
-    //  Telugu is the default language — no /te prefix in the visible URL.
-    //  Old /te/* URLs → 308 redirect to /* (canonical clean URL).
-    //
-    //  The rewrite from /* → /te/* (so Next.js [lang] routes are served) is
-    //  handled in next.config.ts rewrites, which are always processed as truly
-    //  internal server-side rewrites — no new HTTP request, no middleware loop.
+    // Removed because it was causing a 308 redirect loop.
+    // Telugu is the default language at the root.
     // ─────────────────────────────────────────────────────────────────────────
-    if (pathname.startsWith('/te')) {
-        const newPath = pathname.slice(3) || '/';
-        const url = req.nextUrl.clone();
-        url.pathname = newPath;
-        return NextResponse.redirect(url, { status: 308 });
-    }
 
     // ── Rate limiting ─────────────────────────────────────────────────────────
     if (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE') {
