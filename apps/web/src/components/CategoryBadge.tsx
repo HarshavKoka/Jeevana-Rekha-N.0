@@ -1,3 +1,5 @@
+'use client';
+
 const CATEGORY_COLORS: Record<string, string> = {
     trending: 'bg-red-600',
     fire: 'bg-orange-500',

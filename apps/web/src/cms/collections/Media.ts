@@ -1,14 +1,8 @@
 import type { CollectionConfig } from 'payload';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
 
 export const Media: CollectionConfig = {
     slug: 'media',
     upload: {
-        staticDir: path.resolve(dirname, '../../../../media'),
         imageSizes: [
             {
                 name: 'thumbnail',
@@ -45,10 +39,9 @@ export const Media: CollectionConfig = {
         {
             name: 'alt',
             type: 'text',
-            required: true,
             localized: true,
             admin: {
-                description: 'Alt text for accessibility and SEO.',
+                description: 'Alt text for accessibility and SEO. Fill in after uploading.',
             },
         },
         {

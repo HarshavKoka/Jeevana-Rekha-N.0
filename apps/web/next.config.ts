@@ -6,7 +6,8 @@ const isDev = process.env.NODE_ENV !== 'production';
 // The admin subdomain (admin.jeevanarekha.com) needs to load assets and make
 // API calls to the main domain (jeevanarekha.com). We derive it from the env var
 // so this works in both staging and production without hardcoding the domain.
-const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? '';
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://jeevanarekha.com';
+const adminUrl  = process.env.NEXT_PUBLIC_ADMIN_URL ?? 'https://admin.jeevanarekha.com';
 
 // Content Security Policy — adjusted for Payload admin UI + Google Analytics
 const cspDirectives = [
@@ -14,14 +15,15 @@ const cspDirectives = [
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
     "style-src 'self' 'unsafe-inline'",
     // Include main domain so admin subdomain can load uploaded media
-    `img-src 'self' data: blob: https://images.unsplash.com https://img.youtube.com${serverUrl ? ` ${serverUrl}` : ''}`,
+    `img-src 'self' data: blob: https://images.unsplash.com https://img.youtube.com https://www.gravatar.com https://secure.gravatar.com https://*.s3.amazonaws.com https://*.s3.ap-south-1.amazonaws.com ${serverUrl} ${adminUrl}`,
     "font-src 'self'",
-    // Include main domain so admin subdomain can make API calls
-    `connect-src 'self' https://www.google-analytics.com https://analytics.google.com${serverUrl ? ` ${serverUrl}` : ''}`,
+    // Include both domains so admin subdomain can make API calls to main domain
+    `connect-src 'self' https://www.google-analytics.com https://analytics.google.com ${serverUrl} ${adminUrl}`,
     "frame-src 'self' https://www.youtube.com",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    // Allow form submissions to both main domain and admin subdomain
+    `form-action 'self' ${serverUrl} ${adminUrl}`,
     // upgrade-insecure-requests is intentionally omitted — HTTPS is enforced at
     // the ALB layer. Including it causes confusing redirect loops when Node.js
     // sees internal HTTP requests from the proxy.
@@ -47,10 +49,15 @@ const nextConfig: NextConfig = {
     // Don't leak the server technology in response headers
     poweredByHeader: false,
     images: {
+        minimumCacheTTL: 3600,           // Cache optimised images at CDN for 1 hour
+        formats: ['image/webp'],          // Serve WebP for ~30% smaller files
         remotePatterns: [
             { protocol: 'https', hostname: 'images.unsplash.com' },
             { protocol: 'https', hostname: 'img.youtube.com' },
-            { protocol: 'http', hostname: 'localhost' },
+            { protocol: 'https', hostname: '*.s3.amazonaws.com' },
+            { protocol: 'https', hostname: '*.s3.ap-south-1.amazonaws.com' },
+            { protocol: 'https', hostname: 'jeevanarekha.com' },
+            { protocol: 'http',  hostname: 'localhost' },
         ],
     },
     // Payload v3 requires full Node.js runtime

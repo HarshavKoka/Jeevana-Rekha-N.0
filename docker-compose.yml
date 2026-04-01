@@ -1,20 +1,25 @@
 # ============================================================
 # Jeevana Rekha — Local Docker Testing
 # Usage:
-#   1. Copy .env.example to .env and fill values
+#   1. Copy apps/web/.env.local to .env and fill values
 #   2. docker-compose up --build
 #   3. Visit http://localhost:3000
 #   4. CMS admin: http://localhost:3000/admin
 # ============================================================
-
-version: "3.8"
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner # Build up to the final runner stage
+      target: runner
+      args:
+        MONGODB_URI:            ${MONGODB_URI}
+        PAYLOAD_SECRET:         ${PAYLOAD_SECRET}
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+        NEXT_PUBLIC_ADMIN_URL:  ${NEXT_PUBLIC_ADMIN_URL:-http://localhost:3000}
+        NEXT_PUBLIC_GA_ID:      ${NEXT_PUBLIC_GA_ID}
+        NEXT_PUBLIC_MEDIA_URL:  ${NEXT_PUBLIC_MEDIA_URL}
     container_name: jeevanarekha_app
     ports:
       - "3000:3000"
@@ -22,28 +27,31 @@ services:
       # ── Payload CMS ─────────────────────────────────────
       - MONGODB_URI=${MONGODB_URI}
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - PAYLOAD_SEED=false
 
       # ── Server URLs ──────────────────────────────────────
-      - SERVER_URL=${SERVER_URL:-http://localhost:3000}
       - NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
-      - NEXT_PUBLIC_CMS_URL=${NEXT_PUBLIC_CMS_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL:-http://localhost:3000}
 
       # ── Analytics ────────────────────────────────────────
       - NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
 
-      # ── AWS S3 ───────────────────────────────────────────
+      # ── Media CDN ────────────────────────────────────────
+      - NEXT_PUBLIC_MEDIA_URL=${NEXT_PUBLIC_MEDIA_URL}
+
+      # ── AWS S3 (media uploads) ───────────────────────────
       - S3_BUCKET=${S3_BUCKET}
-      - S3_REGION=${S3_REGION}
+      - S3_REGION=${S3_REGION:-ap-south-1}
       - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
       - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
-      - NEXT_PUBLIC_S3_BASE_URL=${NEXT_PUBLIC_S3_BASE_URL}
+
+      # ── AWS CloudFront (cache invalidation on publish) ───
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - CLOUDFRONT_DISTRIBUTION_ID=${CLOUDFRONT_DISTRIBUTION_ID}
 
       # ── Runtime ──────────────────────────────────────────
       - NODE_ENV=production
-
-    volumes:
-      # Persist uploaded media across container restarts
-      - media_uploads:/app/public/media
 
     restart: unless-stopped
 
@@ -53,7 +61,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-
-volumes:
-  media_uploads:
-    driver: local

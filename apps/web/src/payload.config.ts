@@ -1,6 +1,7 @@
 import { buildConfig } from 'payload';
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { s3Storage } from '@payloadcms/storage-s3';
 import sharp from 'sharp';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -29,8 +30,11 @@ for (const key of REQUIRED_ENV_VARS) {
 // Both the main domain and admin subdomain must be allowed.
 // Admin panel at admin.jeevanarekha.com makes cross-origin API calls to
 // jeevanarekha.com/api — CORS and CSRF must permit that origin.
-const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? '';
-const adminUrl  = serverUrl ? serverUrl.replace('://', '://admin.') : '';
+const serverUrl  = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://jeevanarekha.com';
+const adminUrl   = process.env.NEXT_PUBLIC_ADMIN_URL
+    ?? (serverUrl ? serverUrl.replace('://', '://admin.') : 'https://admin.jeevanarekha.com');
+
+// Always include both domains explicitly — never leave csrf empty
 const allowedOrigins = [serverUrl, adminUrl].filter(Boolean);
 
 export default buildConfig({
@@ -38,9 +42,10 @@ export default buildConfig({
     secret: process.env.PAYLOAD_SECRET!,
 
     // CORS — allow both main domain and admin subdomain
-    cors: allowedOrigins.length > 0 ? allowedOrigins : '*',
+    cors: allowedOrigins,
 
-    // CSRF — protect mutations; must include admin subdomain origin
+    // CSRF — protect mutations; must include admin subdomain origin.
+    // An empty array would block ALL mutations (uploads, saves, etc.)
     csrf: allowedOrigins,
 
     admin: {
@@ -68,6 +73,29 @@ export default buildConfig({
     globals: [
         ThemeSettings,
         SiteSettings,
+    ],
+
+    plugins: [
+        s3Storage({
+            collections: {
+                media: {
+                    prefix: 'media',
+                    generateFileURL: ({ filename, prefix }) => {
+                        const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+                        if (mediaUrl) return `${mediaUrl}/${filename}`;
+                        return `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/${prefix}/${filename}`;
+                    },
+                },
+            },
+            bucket: process.env.S3_BUCKET!,
+            config: {
+                credentials: {
+                    accessKeyId:     process.env.S3_ACCESS_KEY_ID!,
+                    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+                },
+                region: process.env.S3_REGION ?? 'ap-south-1', // Mumbai — always ap-south-1 for S3
+            },
+        }),
     ],
 
     localization: {

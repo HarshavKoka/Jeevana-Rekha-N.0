@@ -18,7 +18,7 @@ export function generateSEO({
     type?: 'website' | 'article';
 }): Metadata {
     const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || `https://${SITE_CONFIG.domain}`;
-    const url = `${baseUrl}/${lang}${path}`;
+    const url = `${baseUrl}${path}`;
     const fullTitle = `${title} | ${SITE_CONFIG.name}`;
     const absoluteImage = image.startsWith('http') ? image : `${baseUrl}${image}`;
 
@@ -53,7 +53,7 @@ export function generateNewsSchema(article: Article, lang: Language): Record<str
 
     const categorySlug =
         typeof article.category === 'object' ? article.category.slug : 'general';
-    const articleUrl = `${baseUrl}/${lang}/${article.publishYear}-${article.publishMonth}-${article.publishDay}/${article.id}/${categorySlug}/${article.slug}`;
+    const articleUrl = `${baseUrl}/te/${article.publishYear}-${article.publishMonth}-${article.publishDay}/1/${categorySlug}/${article.slug}`;
 
     const authorName =
         typeof article.author === 'object'

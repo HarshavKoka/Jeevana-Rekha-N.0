@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import CategoryBadge from './CategoryBadge';
-import { langPath } from '../lib/url';
 
 interface HeroArticleProps {
     lang: string;
@@ -13,9 +12,13 @@ interface HeroArticleProps {
     image?: string;
 }
 
-export default function HeroArticle({ lang, slug, category, title, excerpt, date, image }: HeroArticleProps) {
+export default function HeroArticle({ lang, slug, category, title, excerpt, date, image, publishDate }: HeroArticleProps & { publishDate?: string }) {
+    const isoDate = publishDate
+        ? new Date(publishDate).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
+    const href = `/te/${isoDate}/1/${category || 'today'}/${slug}`;
     return (
-        <Link href={langPath(lang, `/article/${slug}`)} className="group block relative overflow-hidden rounded-[2.5rem] shadow-xl transition-all duration-500 hover:shadow-2xl">
+        <Link href={href} className="group block relative overflow-hidden rounded-[2.5rem] shadow-xl transition-all duration-500 hover:shadow-2xl">
             <div className="relative aspect-[16/10] md:aspect-[16/9] w-full overflow-hidden rounded-[2.5rem]">
                 {/* Image */}
                 <div className="absolute inset-0 bg-gray-100 dark:bg-zinc-900">

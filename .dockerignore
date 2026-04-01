@@ -40,6 +40,10 @@ npm-debug.log*
 **/*.spec.tsx
 .github
 
+# ── Local media uploads (S3 in production) ────────────────────
+media
+apps/media
+
 # ── Docker itself ─────────────────────────────────────────────
 Dockerfile
 docker-compose.yml

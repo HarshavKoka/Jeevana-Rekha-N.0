@@ -18,8 +18,7 @@ export function langPath(lang: Language | string, path: string): string {
 
 /**
  * Build a canonical article URL.
- * Telugu (default): /{YYYY-MM-DD}/{index}/{category}/{slug}
- * English:          /en/{YYYY-MM-DD}/{index}/{category}/{slug}
+ * Format: /te/{YYYY-MM-DD}/{articleNumber}/{category}/{slug}
  */
 export function buildArticleUrl(
     lang: Language | string,
@@ -27,11 +26,16 @@ export function buildArticleUrl(
     index = 1,
     originCategory = 'today',
 ): string {
-    if (!article) return langPath(lang, '/');
+    if (!article) return '/';
 
     const dateStr = article.publishDate
         ? new Date(article.publishDate).toISOString().split('T')[0]
         : '2026-01-01';
+
+    const category =
+        typeof article.category === 'object' && article.category?.slug
+            ? article.category.slug
+            : originCategory;
 
     // article.slug is a plain string (not localized in the CMS schema).
     // Guard against Payload returning a localized object in edge cases.
@@ -44,12 +48,12 @@ export function buildArticleUrl(
         slug = localized[lang as string] ?? localized['te'] ?? Object.values(localized)[0] ?? 'article';
     }
 
-    return langPath(lang, `/${dateStr}/${index}/${originCategory}/${slug}`);
+    return `/te/${dateStr}/${index}/${category}/${slug}`;
 }
 
 /**
  * Parse an article URL back into its named parts.
- * Handles both /en/date/... (English) and /date/... (Telugu default).
+ * Canonical format: /te/{YYYY-MM-DD}/{index}/{category}/{slug}
  */
 export function parseArticleUrl(url: string): {
     lang: string;
@@ -58,20 +62,10 @@ export function parseArticleUrl(url: string): {
     category: string;
     slug: string;
 } | null {
-    // English: /en/date/index/category/slug
-    const enMatch = url.match(/^\/en\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
-    if (enMatch) {
-        return { lang: 'en', date: enMatch[1], index: enMatch[2], category: enMatch[3], slug: enMatch[4] };
-    }
-    // Legacy /te/... redirect — should not appear in canonical URLs but handle gracefully
-    const teMatch = url.match(/^\/te\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
-    if (teMatch) {
-        return { lang: 'te', date: teMatch[1], index: teMatch[2], category: teMatch[3], slug: teMatch[4] };
-    }
-    // Telugu default: /date/index/category/slug (no lang prefix)
-    const defaultMatch = url.match(/^\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
-    if (defaultMatch) {
-        return { lang: 'te', date: defaultMatch[1], index: defaultMatch[2], category: defaultMatch[3], slug: defaultMatch[4] };
+    // Canonical: /te/date/index/category/slug
+    const match = url.match(/^\/te\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
+    if (match) {
+        return { lang: 'te', date: match[1], index: match[2], category: match[3], slug: match[4] };
     }
     return null;
 }

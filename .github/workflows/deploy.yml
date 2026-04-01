@@ -1,113 +1,182 @@
 # =============================================================================
 # Jeevana Rekha — CI/CD Pipeline
 #
-# Triggers on every push to master.
-# Builds a Docker image, pushes it to ECR, then deploys to EC2 over SSH.
+# Flow:  Push to master
+#          │
+#          ├─ build  → Docker BuildKit (layer cache) → ECR push
+#          │
+#          └─ deploy → EC2 zero-downtime swap
+#                       → health check (retry 5x)
+#                       → CloudFront invalidation
+#                       → ECR lifecycle prune
 #
 # Required GitHub Secrets (Settings → Secrets → Actions):
 #
-#   AWS_ACCESS_KEY_ID         IAM user key — needs ECR push permission
-#   AWS_SECRET_ACCESS_KEY     Corresponding secret
-#   AWS_ACCOUNT_ID            12-digit AWS account ID (for ECR registry URL)
-#   EC2_HOST                  EC2 public IP or hostname
-#   EC2_SSH_KEY               Contents of the .pem private key file
-#   MONGODB_URI               Full MongoDB Atlas connection string
-#   PAYLOAD_SECRET            32+ char random secret for Payload CMS
-#   NEXT_PUBLIC_SERVER_URL    https://jeevanarekha.com
-#   NEXT_PUBLIC_GA_ID         Google Analytics ID (G-XXXXXXXXXX)
+#   AWS_ACCESS_KEY_ID           IAM key — ECR push + CloudFront invalidation
+#   AWS_SECRET_ACCESS_KEY       Corresponding secret
+#   AWS_ACCOUNT_ID              12-digit AWS account ID
+#   EC2_HOST                    EC2 public IP or hostname
+#   EC2_SSH_KEY                 Full contents of .pem private key
+#   MONGODB_URI                 MongoDB Atlas connection string
+#   PAYLOAD_SECRET              32+ char Payload CMS secret
+#   NEXT_PUBLIC_SERVER_URL      https://jeevanarekha.com
+#   NEXT_PUBLIC_ADMIN_URL       https://admin.jeevanarekha.com
+#   NEXT_PUBLIC_GA_ID           Google Analytics ID (G-XXXXXXXXXX)
+#   NEXT_PUBLIC_MEDIA_URL       https://jeevanarekha.com/media
+#   CLOUDFRONT_DISTRIBUTION_ID  EBPKX1EKBKTJ7
+#   S3_BUCKET                   jeevanarekha-images
+#   S3_REGION                   ap-south-1
+#   S3_ACCESS_KEY_ID            S3 IAM key
+#   S3_SECRET_ACCESS_KEY        S3 IAM secret
 # =============================================================================
 
-name: Build & Deploy
+name: 🚀 Build & Deploy
 
 on:
   push:
     branches: [master]
-
-  # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
 
+env:
+  AWS_REGION:      ap-south-1
+  ECR_REPOSITORY:  jeevanarekha
+  CONTAINER_NAME:  jeevanarekha_app
+
+# ─────────────────────────────────────────────────────────────────────────────
 jobs:
-  deploy:
-    name: Build, Push, Deploy
+
+# ── JOB 1: Build Docker image and push to ECR ─────────────────────────────
+  build:
+    name: 🔨 Build & Push
     runs-on: ubuntu-latest
 
+    outputs:
+      registry: ${{ steps.ecr.outputs.registry }}
+      image:    ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. AWS auth ──────────────────────────────────────────────────────────
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region:            ${{ env.AWS_REGION }}
 
-      # ── 3. ECR login ─────────────────────────────────────────────────────────
       - name: Login to Amazon ECR
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # ── 4. Build Docker image ────────────────────────────────────────────────
-      #
-      # NEXT_PUBLIC_* vars must be passed as build args — they are embedded
-      # into the JS bundle at compile time by Next.js. Passing them at runtime
-      # via --env-file does NOT work for these variables.
-      #
-      - name: Build Docker image
-        env:
-          REGISTRY: ${{ steps.ecr.outputs.registry }}
-          IMAGE: jeevanarekha
-          TAG: ${{ github.sha }}
-        run: |
-          docker build \
-            --build-arg MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-            --build-arg PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
-            --build-arg NEXT_PUBLIC_SERVER_URL="${{ secrets.NEXT_PUBLIC_SERVER_URL }}" \
-            --build-arg NEXT_PUBLIC_GA_ID="${{ secrets.NEXT_PUBLIC_GA_ID }}" \
-            -t $REGISTRY/$IMAGE:$TAG \
-            -t $REGISTRY/$IMAGE:latest \
-            .
+      # Docker BuildKit with GitHub Actions layer cache
+      # First build: ~8 min | Subsequent builds: ~2 min (unchanged layers cached)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # ── 5. Push to ECR ───────────────────────────────────────────────────────
-      - name: Push image to ECR
-        env:
-          REGISTRY: ${{ steps.ecr.outputs.registry }}
-          IMAGE: jeevanarekha
-          TAG: ${{ github.sha }}
-        run: |
-          docker push $REGISTRY/$IMAGE:$TAG
-          docker push $REGISTRY/$IMAGE:latest
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context:   .
+          push:      true
+          platforms: linux/amd64
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          # Layer cache stored in GitHub Actions Cache (free, fast)
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+          build-args: |
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
+            NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+            NEXT_PUBLIC_ADMIN_URL=${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+            NEXT_PUBLIC_GA_ID=${{ secrets.NEXT_PUBLIC_GA_ID }}
+            NEXT_PUBLIC_MEDIA_URL=${{ secrets.NEXT_PUBLIC_MEDIA_URL }}
 
-      # ── 6. Deploy to EC2 ─────────────────────────────────────────────────────
-      #
-      # Pull the new image FIRST (while old container still serves traffic),
-      # then swap — this minimises the downtime window to just the restart time.
-      #
-      # Prerequisite: EC2 must have an IAM instance role with ecr:GetAuthorizationToken
-      # and ecr:BatchGetImage permissions, OR the AWS credentials are available on EC2.
-      #
+# ── JOB 2: Deploy to EC2 (zero-downtime) ─────────────────────────────────
+  deploy:
+    name: 🚢 Deploy
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Zero-downtime deploy:
+      #   1. Pull new image while old container still serves traffic
+      #   2. Write fresh .env from GitHub Secrets
+      #   3. Stop old → start new (downtime = container restart ~3s)
+      #   4. Health check with 5 retries before declaring success
+      #   5. Prune old images to keep EC2 disk clean
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
+        env:
+          REGISTRY:   ${{ steps.ecr.outputs.registry }}
+          IMAGE_TAG:  ${{ github.sha }}
+          # Runtime secrets injected into EC2 .env via SSH
+          MONGODB_URI:                ${{ secrets.MONGODB_URI }}
+          PAYLOAD_SECRET:             ${{ secrets.PAYLOAD_SECRET }}
+          NEXT_PUBLIC_SERVER_URL:     ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+          NEXT_PUBLIC_ADMIN_URL:      ${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+          NEXT_PUBLIC_GA_ID:          ${{ secrets.NEXT_PUBLIC_GA_ID }}
+          NEXT_PUBLIC_MEDIA_URL:      ${{ secrets.NEXT_PUBLIC_MEDIA_URL }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          AWS_ACCESS_KEY_ID:          ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:      ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET:                  ${{ secrets.S3_BUCKET }}
+          S3_REGION:                  ${{ secrets.S3_REGION }}
+          S3_ACCESS_KEY_ID:           ${{ secrets.S3_ACCESS_KEY_ID }}
+          S3_SECRET_ACCESS_KEY:       ${{ secrets.S3_SECRET_ACCESS_KEY }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host:     ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key:      ${{ secrets.EC2_SSH_KEY }}
+          envs:     REGISTRY,IMAGE_TAG,MONGODB_URI,PAYLOAD_SECRET,NEXT_PUBLIC_SERVER_URL,NEXT_PUBLIC_ADMIN_URL,NEXT_PUBLIC_GA_ID,NEXT_PUBLIC_MEDIA_URL,CLOUDFRONT_DISTRIBUTION_ID,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET,S3_REGION,S3_ACCESS_KEY_ID,S3_SECRET_ACCESS_KEY
           script: |
             set -e
 
-            REGISTRY="${{ steps.ecr.outputs.registry }}"
-            IMAGE="$REGISTRY/jeevanarekha:latest"
+            IMAGE="$REGISTRY/jeevanarekha:$IMAGE_TAG"
+            echo "▶ Deploying $IMAGE"
 
-            echo "==> Authenticating with ECR..."
+            # ── Auth & pull while old container still runs ──────────────────
             aws ecr get-login-password --region ap-south-1 | \
               docker login --username AWS --password-stdin "$REGISTRY"
 
-            echo "==> Pulling new image (old container still running)..."
+            echo "▶ Pulling new image..."
             docker pull "$IMAGE"
 
-            echo "==> Swapping containers..."
+            # ── Write fresh .env from GitHub Secrets ────────────────────────
+            cat > /home/ubuntu/.env << EOF
+            NODE_ENV=production
+            MONGODB_URI=${MONGODB_URI}
+            PAYLOAD_SECRET=${PAYLOAD_SECRET}
+            NEXT_PUBLIC_SERVER_URL=${NEXT_PUBLIC_SERVER_URL}
+            NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
+            NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
+            NEXT_PUBLIC_MEDIA_URL=${NEXT_PUBLIC_MEDIA_URL}
+            CLOUDFRONT_DISTRIBUTION_ID=${CLOUDFRONT_DISTRIBUTION_ID}
+            AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            S3_BUCKET=${S3_BUCKET}
+            S3_REGION=${S3_REGION}
+            S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
+            S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+            PAYLOAD_SEED=false
+            EOF
+            chmod 600 /home/ubuntu/.env
+
+            # ── Swap containers (minimal downtime window) ───────────────────
+            echo "▶ Swapping containers..."
             docker stop jeevanarekha_app 2>/dev/null || true
             docker rm   jeevanarekha_app 2>/dev/null || true
 
@@ -115,21 +184,79 @@ jobs:
               --name jeevanarekha_app \
               --restart unless-stopped \
               --env-file /home/ubuntu/.env \
+              --log-opt max-size=100m \
+              --log-opt max-file=3 \
               -p 3000:3000 \
-              -v /home/ubuntu/media:/app/public/media \
               "$IMAGE"
 
-            echo "==> Waiting for app to be ready..."
-            sleep 15
+            # ── Health check with retries ───────────────────────────────────
+            echo "▶ Waiting for app to be healthy..."
+            for i in 1 2 3 4 5; do
+              sleep 10
+              if curl -sf http://localhost:3000/api/health > /dev/null; then
+                echo "✅ Health check passed (attempt $i)"
+                break
+              fi
+              echo "  Attempt $i failed, retrying..."
+              if [ $i -eq 5 ]; then
+                echo "❌ Health check failed after 5 attempts"
+                docker logs jeevanarekha_app --tail 50
+                exit 1
+              fi
+            done
 
-            echo "==> Health check..."
-            curl -f http://localhost:3000/api/health
-            echo ""
-            echo "==> Deploy complete."
+            # ── Prune old images to free EC2 disk space ─────────────────────
+            echo "▶ Cleaning up old images..."
+            docker image prune -f
+            docker images "$REGISTRY/jeevanarekha" --format "{{.ID}} {{.Tag}}" | \
+              grep -v "latest\|$IMAGE_TAG" | awk '{print $1}' | xargs -r docker rmi || true
 
-      # ── 7. Notify on failure ─────────────────────────────────────────────────
+            echo "✅ Deploy complete: $IMAGE_TAG"
+
+      # ── CloudFront invalidation (runs on GitHub runner, not EC2) ──────────
+      # Invalidates edge cache across all 400+ CloudFront POPs globally.
+      # Runs AFTER health check passes — never invalidates a broken deploy.
+      - name: Invalidate CloudFront cache
+        run: |
+          echo "▶ Invalidating CloudFront distribution ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}..."
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --paths "/*"
+          echo "✅ CloudFront cache invalidated"
+
+      # ── ECR lifecycle: keep only last 5 images ────────────────────────────
+      # Prevents ECR storage costs from growing unbounded.
+      # $0.10/GB/month — 5 images × ~500MB ≈ $0.25/month
+      - name: Prune old ECR images
+        run: |
+          IMAGES=$(aws ecr describe-images \
+            --repository-name ${{ env.ECR_REPOSITORY }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'sort_by(imageDetails, &imagePushedAt)[*].imageDigest' \
+            --output json | jq -r '.[]')
+
+          COUNT=$(echo "$IMAGES" | wc -l)
+          KEEP=5
+
+          if [ "$COUNT" -gt "$KEEP" ]; then
+            TO_DELETE=$(echo "$IMAGES" | head -n $(($COUNT - $KEEP)))
+            for digest in $TO_DELETE; do
+              aws ecr batch-delete-image \
+                --repository-name ${{ env.ECR_REPOSITORY }} \
+                --region ${{ env.AWS_REGION }} \
+                --image-ids imageDigest=$digest
+            done
+            echo "▶ Pruned $(($COUNT - $KEEP)) old ECR image(s)"
+          else
+            echo "▶ ECR has $COUNT image(s) — nothing to prune"
+          fi
+
+      # ── Failure notification ──────────────────────────────────────────────
       - name: Notify failure
         if: failure()
         run: |
-          echo "::error::Deploy failed on commit ${{ github.sha }} by ${{ github.actor }}"
-          echo "Check the logs above to diagnose."
+          echo "::error::❌ Deploy FAILED"
+          echo "::error::Commit: ${{ github.sha }}"
+          echo "::error::Author: ${{ github.actor }}"
+          echo "::error::Branch: ${{ github.ref_name }}"
+          echo "::error::Check logs above for root cause."

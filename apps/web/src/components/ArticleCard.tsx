@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import CategoryBadge from './CategoryBadge';
-import { langPath } from '../lib/url';
 
 interface ArticleCardProps {
     lang: string;
@@ -14,10 +13,14 @@ interface ArticleCardProps {
     isSidebar?: boolean;
 }
 
-export default function ArticleCard({ lang, slug, category, title, excerpt, date, image, isSidebar = false }: ArticleCardProps) {
+export default function ArticleCard({ lang, slug, category, title, excerpt, date, image, isSidebar = false, publishDate }: ArticleCardProps & { publishDate?: string }) {
+    const isoDate = publishDate
+        ? new Date(publishDate).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
+    const href = `/te/${isoDate}/1/${category || 'today'}/${slug}`;
     return (
         <Link
-            href={langPath(lang, `/article/${slug}`)}
+            href={href}
             className="group block bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-gray-100 dark:border-zinc-800"
         >
             {/* Top: Image */}

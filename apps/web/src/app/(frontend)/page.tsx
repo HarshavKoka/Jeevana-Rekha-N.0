@@ -12,11 +12,12 @@ import VideoCard from '@/components/VideoCard';
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-    return generateSEO({
-        title: 'JEEVANA REKHA - నిజం, నిర్భయత్వం, బాధ్యత',
+    const seo = generateSEO({
+        title: 'Jeevana Rekha',
         description: 'తెలుగు వార్తా వేదిక - తాజా వార్తలు, విశ్లేషణలు',
         lang: 'te',
     });
+    return { ...seo, title: 'Jeevana Rekha' };
 }
 
 export default async function HomePage() {
@@ -176,8 +177,8 @@ export default async function HomePage() {
                             </Link>
 
                             <div className="space-y-6">
-                                {latestArticles && latestArticles.slice(0, 3).map((article) => (
-                                    <Link key={article.id} href={buildArticleUrl('te', article, 1, 'weekly-roundup')} className="article-card flex gap-4 items-center group">
+                                {latestArticles && latestArticles.slice(0, 3).map((article, idx) => (
+                                    <Link key={article.id} href={buildArticleUrl('te', article, idx + 1, 'weekly-roundup')} className="article-card flex gap-4 items-center group">
                                         <div className="w-20 h-20 bg-zinc-200 dark:bg-zinc-800 rounded-2xl shrink-0 overflow-hidden relative">
                                             <Image src={getImageUrl(article.heroImage, 'thumbnail')} alt={article.title} fill className="object-cover group-hover:scale-110 transition-transform" />
                                         </div>
