@@ -7,7 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "seed": "PAYLOAD_SEED=true next dev",
+        "seed": "cross-env PAYLOAD_SEED=true next dev",
         "generate:types": "payload generate:types"
     },
     "dependencies": {
@@ -32,6 +32,7 @@
         "@types/react": "latest",
         "@types/react-dom": "latest",
         "autoprefixer": "latest",
+        "cross-env": "^10.1.0",
         "postcss": "latest",
         "tailwindcss": "latest",
         "typescript": "latest"

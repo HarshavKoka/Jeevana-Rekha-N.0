@@ -206,3 +206,28 @@ svg {
   display: inline-block;
   vertical-align: middle;
 }
+
+/* ─── CMS THEME VARS ────────────────────────────────── */
+/*
+ * These rules sit outside any @layer, so they have the
+ * highest cascade priority and safely override Tailwind utilities.
+ *
+ * --site-font-base   : set by layout.tsx from ThemeSettings.bodyFontSize
+ * --heading-tracking : set by layout.tsx from ThemeSettings.headingScale
+ * --heading-leading  : set by layout.tsx from ThemeSettings.headingScale
+ *
+ * Defaults here are the fallbacks when the CMS returns no data.
+ */
+html {
+  font-size: var(--site-font-base, 16px);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: var(--heading-tracking, -0.025em);
+  line-height: var(--heading-leading, 1.1);
+}

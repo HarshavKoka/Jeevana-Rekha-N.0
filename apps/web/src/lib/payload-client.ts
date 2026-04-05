@@ -9,7 +9,12 @@ import { Article, Category, Language } from '../types';
  * Uses direct database queries (no HTTP overhead) for maximum performance.
  * All functions accept a locale for te/en content.
  * Results are cached with Next.js unstable_cache for ISR performance.
+ *
+ * In development: revalidate is 0 so every request fetches fresh data —
+ * articles published in the admin appear on the frontend immediately.
+ * In production: normal ISR TTLs apply and CloudFront invalidation handles busting.
  */
+const DEV = process.env.NODE_ENV === 'development';
 
 // Singleton: reuse the same Payload instance across requests
 let cachedPayload: Payload | null = null;
@@ -57,7 +62,7 @@ export const getArticles = unstable_cache(
         }) as unknown as Promise<FindResult<Article>>;
     },
     ['articles-list'],
-    { revalidate: 60, tags: ['articles'] },
+    { revalidate: DEV ? false : 60, tags: ['articles'] },
 );
 
 /** Full article with all relations populated. Use for the article detail page. */
@@ -73,7 +78,7 @@ export const getArticleById = unstable_cache(
         }
     },
     ['article-by-id'],
-    { revalidate: 300, tags: ['articles'] },
+    { revalidate: DEV ? false : 300, tags: ['articles'] },
 );
 
 /** Full article by slug. Use for the article detail page. */
@@ -91,7 +96,7 @@ export const getArticleBySlug = unstable_cache(
         return (result.docs[0] as Article) ?? null;
     },
     ['article-by-slug'],
-    { revalidate: 300, tags: ['articles'] },
+    { revalidate: DEV ? false : 300, tags: ['articles'] },
 );
 
 /** Articles for a given category slug. */
@@ -128,7 +133,7 @@ export const getArticlesByCategory = unstable_cache(
         }) as unknown as Promise<FindResult<Article>>;
     },
     ['articles-by-category'],
-    { revalidate: 120, tags: ['articles'] },
+    { revalidate: DEV ? false : 120, tags: ['articles'] },
 );
 
 /** Top trending articles for the homepage sidebar and ticker. */
@@ -146,7 +151,7 @@ export const getTrendingArticles = unstable_cache(
         }) as unknown as Promise<FindResult<Article>>;
     },
     ['trending-articles'],
-    { revalidate: 60, tags: ['articles'] },
+    { revalidate: DEV ? false : 60, tags: ['articles'] },
 );
 
 /** The single featured (hero) article for the homepage. */
@@ -165,7 +170,7 @@ export const getFeaturedArticle = unstable_cache(
         return (result.docs[0] as Article) ?? null;
     },
     ['featured-article'],
-    { revalidate: 60, tags: ['articles'] },
+    { revalidate: DEV ? false : 60, tags: ['articles'] },
 );
 
 /** Articles published on a specific date (year/month/day strings). */
@@ -187,7 +192,7 @@ export const getArticlesByDate = unstable_cache(
         }) as unknown as Promise<FindResult<Article>>;
     },
     ['articles-by-date'],
-    { revalidate: 300, tags: ['articles'] },
+    { revalidate: DEV ? false : 300, tags: ['articles'] },
 );
 
 /** Convenience wrapper: accepts a "YYYY-MM-DD" string. */
@@ -232,8 +237,66 @@ export const getCategories = unstable_cache(
         }) as unknown as Promise<FindResult<Category>>;
     },
     ['categories'],
-    { revalidate: 3600, tags: ['categories'] },
+    { revalidate: DEV ? false : 3600, tags: ['categories'] },
 );
+
+// ─── GLOBALS ───────────────────────────────────────────────────────────────
+
+export type ThemeSettingsData = {
+    primaryColor?: string;
+    secondaryColor?: string;
+    bodyFontSize?: 'small' | 'medium' | 'large';
+    headingScale?: 'compact' | 'normal' | 'spacious';
+    fontHeadingTelugu?: string;
+    fontHeadingEnglish?: string;
+};
+
+const FONT_SIZE_MAP: Record<string, string> = {
+    small:  '14px',
+    medium: '16px',
+    large:  '18px',
+};
+
+const HEADING_SCALE_MAP: Record<string, { tracking: string; leading: string }> = {
+    compact:  { tracking: '-0.04em',  leading: '1.0'  },
+    normal:   { tracking: '-0.025em', leading: '1.1'  },
+    spacious: { tracking: '0em',      leading: '1.25' },
+};
+
+/** Active theme settings from the CMS. Returns safe defaults if unavailable. */
+export const getThemeSettings = unstable_cache(
+    async (): Promise<ThemeSettingsData> => {
+        const payload = await getPayloadClient();
+        if (!payload) return {};
+        try {
+            const doc = await payload.findGlobal({ slug: 'theme-settings' });
+            return doc as ThemeSettingsData;
+        } catch {
+            return {};
+        }
+    },
+    ['theme-settings'],
+    { revalidate: DEV ? false : 300, tags: ['theme-settings'] },
+);
+
+/** Converts ThemeSettingsData into an inline CSS string for <style> injection. */
+export function buildThemeCss(theme: ThemeSettingsData): string {
+    const primary   = theme.primaryColor   ?? '#FF0000';
+    const secondary = theme.secondaryColor ?? '#0B3D91';
+    const fontSize  = FONT_SIZE_MAP[theme.bodyFontSize ?? 'medium'] ?? '16px';
+    const headStyle = HEADING_SCALE_MAP[theme.headingScale ?? 'normal'] ?? HEADING_SCALE_MAP.normal;
+
+    return [
+        ':root{',
+        `--primary:${primary};`,
+        `--secondary:${secondary};`,
+        `--site-font-base:${fontSize};`,
+        `--heading-tracking:${headStyle.tracking};`,
+        `--heading-leading:${headStyle.leading};`,
+        '}',
+        `html{font-size:var(--site-font-base,16px);}`,
+    ].join('');
+}
 
 /** Single category by slug. */
 export const getCategoryBySlug = unstable_cache(
@@ -250,5 +313,5 @@ export const getCategoryBySlug = unstable_cache(
         return (result.docs[0] as Category) ?? null;
     },
     ['category-by-slug'],
-    { revalidate: 3600, tags: ['categories'] },
+    { revalidate: DEV ? false : 3600, tags: ['categories'] },
 );

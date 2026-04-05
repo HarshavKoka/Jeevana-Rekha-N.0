@@ -5,22 +5,32 @@ export const seed = async (payload: Payload): Promise<void> => {
 
     // 1. Create Admin User (Idempotent)
     let admin;
+    const seedEmail    = process.env.SEED_ADMIN_EMAIL    ?? 'admin@jeevanarekha.com';
+    const seedPassword = process.env.SEED_ADMIN_PASSWORD;
+
+    if (!seedPassword) {
+        throw new Error('[Seed] SEED_ADMIN_PASSWORD env var is required. Set it before running seed.');
+    }
+
     const existingAdmin = await payload.find({
         collection: 'users',
-        where: { email: { equals: 'admin@jeevanarekha.com' } },
+        where: { email: { equals: seedEmail } },
     });
 
     if (existingAdmin.docs.length > 0) {
-        admin = existingAdmin.docs[0];
+        // Always sync the password from env so it stays correct after a seed re-run.
+        // overrideAccess is required — password is an auth field protected by access control.
+        admin = await payload.update({
+            collection: 'users',
+            id: existingAdmin.docs[0].id,
+            data: { password: seedPassword },
+            overrideAccess: true,
+        });
     } else {
-        const seedPassword = process.env.SEED_ADMIN_PASSWORD;
-        if (!seedPassword) {
-            throw new Error('[Seed] SEED_ADMIN_PASSWORD env var is required. Set it before running seed.');
-        }
         admin = await payload.create({
             collection: 'users',
             data: {
-                email: 'admin@jeevanarekha.com',
+                email: seedEmail,
                 password: seedPassword,
                 roles: ['admin'],
             },

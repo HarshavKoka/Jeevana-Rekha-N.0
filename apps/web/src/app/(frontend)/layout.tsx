@@ -3,16 +3,22 @@ import Script from 'next/script';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { Providers } from '../../context/Providers';
+import { getThemeSettings, buildThemeCss } from '../../lib/payload-client';
 
 export const metadata = {
     title: 'Jeevana Rekha',
     description: 'A trusted digital news platform committed to ethical journalism and public interest.',
 };
 
-export default function FrontendLayout({ children }: { children: React.ReactNode }) {
+export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
+    const theme = await getThemeSettings();
+    const themeCss = buildThemeCss(theme);
+
     return (
         <html lang="te">
             <head>
+                {/* CMS-controlled theme: colors + font scale */}
+                <style dangerouslySetInnerHTML={{ __html: themeCss }} />
                 {/* Google Analytics GA4 */}
                 <Script
                     strategy="afterInteractive"
