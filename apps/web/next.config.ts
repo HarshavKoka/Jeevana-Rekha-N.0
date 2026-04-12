@@ -56,6 +56,7 @@ const nextConfig: NextConfig = {
             { protocol: 'https', hostname: 'img.youtube.com' },
             { protocol: 'https', hostname: '*.s3.amazonaws.com' },
             { protocol: 'https', hostname: '*.s3.ap-south-1.amazonaws.com' },
+            { protocol: 'https', hostname: '*.cloudfront.net' },
             { protocol: 'https', hostname: 'jeevanarekha.com' },
             { protocol: 'http',  hostname: 'localhost' },
         ],
