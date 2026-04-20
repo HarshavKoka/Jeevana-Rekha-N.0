@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Article, Language } from '@/types';
-import { getImageUrl, buildArticleUrl, langPath } from '@/lib/url';
+import { getImageUrl, buildArticleUrl } from '@/lib/url';
 import SectionTitle from './SectionTitle';
 
 interface ArticleListViewProps {
@@ -79,7 +79,7 @@ export default function ArticleListView({ articles, title, lang, date, category 
                     <p className="text-xl font-te text-zinc-400">
                         {lang === 'te' ? 'ఈ తేదీన వార్తలు ఏమీ లేవు.' : 'No articles found for this date.'}
                     </p>
-                    <Link href={langPath(lang, '/')} className="inline-block bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform">
+                    <Link href="/" className="inline-block bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform">
                         {lang === 'te' ? 'హోమ్ పేజీకి వెళ్లండి' : 'Back to Home'}
                     </Link>
                 </div>

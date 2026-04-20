@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { X, Moon, Sun } from 'lucide-react';
 import { NAV_ITEMS } from '../lib/constants';
 
-import { langPath } from '../lib/url';
+
 import { useTheme } from '../context/ThemeContext';
 import { usePathname } from 'next/navigation';
 

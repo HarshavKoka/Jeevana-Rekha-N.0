@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, Menu, X, Settings, Search } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { NAV_ITEMS } from '../lib/constants';
-import { langPath } from '../lib/url';
+
 import MobileDrawer from './MobileDrawer';
 import RekhaFlash from './RekhaFlash';
 
