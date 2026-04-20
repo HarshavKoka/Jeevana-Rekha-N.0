@@ -5,7 +5,6 @@ import config from '@payload-config';
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600; // rebuild hourly
 
-const LOCALES = ['te', 'en'] as const;
 
 const CATEGORY_PAGES = [
     'politics', 'sports', 'cinema', 'business',
@@ -18,29 +17,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://jeevanarekha.com';
 
     // ── Static routes ─────────────────────────────────────────────────────────
-    const staticUrls: MetadataRoute.Sitemap = LOCALES.flatMap((lang) => [
-        // Homepage per locale
+    const staticUrls: MetadataRoute.Sitemap = [
+        // Homepage
         {
-            url: `${baseUrl}/${lang}`,
+            url: baseUrl,
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1.0,
         },
         // Category listing pages
         ...CATEGORY_PAGES.map((cat) => ({
-            url: `${baseUrl}/${lang}/${cat}`,
+            url: `${baseUrl}/${cat}`,
             lastModified: new Date(),
             changeFrequency: 'hourly' as const,
             priority: 0.9,
         })),
         // Static info pages
         ...STATIC_PAGES.map((page) => ({
-            url: `${baseUrl}/${lang}/${page}`,
+            url: `${baseUrl}/${page}`,
             lastModified: new Date(),
             changeFrequency: 'monthly' as const,
             priority: 0.4,
         })),
-    ]);
+    ];
 
     // ── Article routes ────────────────────────────────────────────────────────
     let articleUrls: MetadataRoute.Sitemap = [];
@@ -51,11 +50,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             where: { status: { equals: 'published' } },
             limit: 1000,
             sort: '-publishDate',
-            depth: 1,         // populate category relationship for slug
-            locale: 'te',     // primary locale
+            depth: 1,
+            locale: 'te',
         });
 
-        articleUrls = docs.flatMap((article) => {
+        articleUrls = docs.map((article) => {
             const dateStr = article.publishDate
                 ? new Date(article.publishDate).toISOString().split('T')[0]
                 : '2026-01-01';
@@ -68,13 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             const slug = typeof article.slug === 'string' ? article.slug : 'article';
             const lastMod = article.updatedAt ? new Date(article.updatedAt) : new Date();
 
-            // Canonical article URL for each locale
-            return LOCALES.map((lang, i) => ({
-                url: `${baseUrl}/${lang}/${dateStr}/${i + 1}/${categorySlug}/${slug}`,
+            return {
+                url: `${baseUrl}/${dateStr}/1/${categorySlug}/${slug}`,
                 lastModified: lastMod,
                 changeFrequency: 'weekly' as const,
                 priority: 0.7,
-            }));
+            };
         });
     } catch {
         // DB unavailable — return static sitemap only

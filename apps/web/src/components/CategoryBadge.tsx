@@ -26,11 +26,8 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
     defense: { te: 'రక్షణ', en: 'Defense' },
 };
 
-import { useLanguage } from '../context/LanguageContext';
-
 export default function CategoryBadge({ category, label, color }: { category?: string; label?: string; color?: string }) {
-    const { language } = useLanguage();
-    const displayLabel = label || (category ? CATEGORY_LABELS[category]?.[language] || category : '');
+    const displayLabel = label || (category ? CATEGORY_LABELS[category]?.te || category : '');
     const bgColor = color || (category ? CATEGORY_COLORS[category] || 'bg-primary' : 'bg-primary');
 
     return (

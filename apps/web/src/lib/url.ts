@@ -18,7 +18,7 @@ export function langPath(lang: Language | string, path: string): string {
 
 /**
  * Build a canonical article URL.
- * Format: /te/{YYYY-MM-DD}/{articleNumber}/{category}/{slug}
+ * Format: /{YYYY-MM-DD}/{articleNumber}/{category}/{slug}
  */
 export function buildArticleUrl(
     lang: Language | string,
@@ -37,8 +37,7 @@ export function buildArticleUrl(
             ? article.category.slug
             : originCategory;
 
-    // article.slug is a plain string (not localized in the CMS schema).
-    // Guard against Payload returning a localized object in edge cases.
+    // article.slug is a plain string.
     const rawSlug: unknown = article.slug;
     let slug = 'article';
     if (typeof rawSlug === 'string' && rawSlug && rawSlug !== 'undefined') {
@@ -48,12 +47,12 @@ export function buildArticleUrl(
         slug = localized[lang as string] ?? localized['te'] ?? Object.values(localized)[0] ?? 'article';
     }
 
-    return `/te/${dateStr}/${index}/${category}/${slug}`;
+    return `/${dateStr}/${index}/${category}/${slug}`;
 }
 
 /**
  * Parse an article URL back into its named parts.
- * Canonical format: /te/{YYYY-MM-DD}/{index}/{category}/{slug}
+ * Canonical format: /{YYYY-MM-DD}/{index}/{category}/{slug}
  */
 export function parseArticleUrl(url: string): {
     lang: string;
@@ -62,8 +61,8 @@ export function parseArticleUrl(url: string): {
     category: string;
     slug: string;
 } | null {
-    // Canonical: /te/date/index/category/slug
-    const match = url.match(/^\/te\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
+    // Canonical: /date/index/category/slug
+    const match = url.match(/^\/(\d{4}-\d{2}-\d{2})\/(\d+)\/([^/]+)\/([^/]+)/);
     if (match) {
         return { lang: 'te', date: match[1], index: match[2], category: match[3], slug: match[4] };
     }

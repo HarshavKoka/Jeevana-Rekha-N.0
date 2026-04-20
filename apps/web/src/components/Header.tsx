@@ -6,17 +6,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, Menu, X, Settings, Search } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { useLanguage } from '../context/LanguageContext';
 import { NAV_ITEMS } from '../lib/constants';
 import { langPath } from '../lib/url';
 import MobileDrawer from './MobileDrawer';
 import RekhaFlash from './RekhaFlash';
 
-export default function Header({ lang }: { lang: string }) {
+export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  const { language } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -165,7 +163,7 @@ export default function Header({ lang }: { lang: string }) {
           {/* CENTER: Logo */}
           <div className="flex-1 flex justify-center">
             <Link
-              href={langPath(language, '/')}
+              href="/"
               className="relative h-10 md:h-12 w-48 md:w-64 hover:opacity-90 transition-all duration-700 transform-gpu hover:scale-[1.02] flex items-center"
             >
               <Image
@@ -223,7 +221,7 @@ export default function Header({ lang }: { lang: string }) {
           <div className="flex items-center gap-12 xl:gap-16">
             {flashItem && <RekhaFlash />}
             {regularItems.map((item) => {
-              const fullHref = langPath(language, item.href);
+              const fullHref = item.href;
               const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
               return (
                 <Link
@@ -235,7 +233,7 @@ export default function Header({ lang }: { lang: string }) {
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-primary'
                   }`}
                 >
-                  {item.label[language]}
+                  {item.label}
                   {isActive && (
                     <span className="absolute bottom-1 left-0 w-full h-1 bg-primary rounded-full" />
                   )}

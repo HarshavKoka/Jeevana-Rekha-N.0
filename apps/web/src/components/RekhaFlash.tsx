@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useLanguage } from '../context/LanguageContext';
-import { langPath } from '../lib/url';
 
 interface FlashHeadline {
     id: string;
@@ -18,7 +16,6 @@ const FALLBACK_HEADLINES: FlashHeadline[] = [
 ];
 
 export default function RekhaFlash() {
-    const { language } = useLanguage();
     const [headlines, setHeadlines] = useState<FlashHeadline[]>(FALLBACK_HEADLINES);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -29,7 +26,7 @@ export default function RekhaFlash() {
                 const cmsUrl = process.env.NEXT_PUBLIC_CMS_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3002';
                 if (!cmsUrl) return;
 
-                const res = await fetch(`${cmsUrl}/api/articles?where[status][equals]=published&limit=6&locale=${language}&sort=-publishDate`);
+                const res = await fetch(`${cmsUrl}/api/articles?where[status][equals]=published&limit=6&locale=te&sort=-publishDate`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.docs?.length > 0) {
@@ -45,7 +42,7 @@ export default function RekhaFlash() {
             }
         }
         fetchTrending();
-    }, [language]);
+    }, []);
 
     // Auto-rotate headlines
     useEffect(() => {
@@ -60,7 +57,7 @@ export default function RekhaFlash() {
         <div className="flex items-center gap-3 shrink-0">
             {/* Blinking Red Dot + Label */}
             <Link
-                href={langPath(language, '/rekha-flash')}
+                href="/rekha-flash"
                 className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105"
             >
                 <span className="relative flex h-3 w-3">

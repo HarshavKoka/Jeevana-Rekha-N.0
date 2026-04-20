@@ -2,36 +2,36 @@ import { NavItem } from '../types';
 
 export const NAV_ITEMS: NavItem[] = [
     {
-        label: { te: 'రేఖ ఫ్లాష్', en: '' },
+        label: 'రేఖ ఫ్లాష్',
         href: '/rekha-flash',
         isFlash: true,
     },
     {
-        label: { te: 'ట్రెండింగ్', en: '' },
+        label: 'ట్రెండింగ్',
         href: '/trending',
     },
     {
-        label: { te: 'ఫైర్', en: '' },
+        label: 'ఫైర్',
         href: '/fire',
     },
     {
-        label: { te: 'సినిమా', en: '' },
+        label: 'సినిమా',
         href: '/cinema',
     },
     {
-        label: { te: 'స్పోర్ట్స్', en: '' },
+        label: 'స్పోర్ట్స్',
         href: '/sports',
     },
     {
-        label: { te: 'రాజకీయాలు', en: '' },
+        label: 'రాజకీయాలు',
         href: '/politics',
     },
     {
-        label: { te: 'బిజినెస్', en: '' },
+        label: 'బిజినెస్',
         href: '/business',
     },
     {
-        label: { te: 'ఉద్యోగాలు', en: '' },
+        label: 'ఉద్యోగాలు',
         href: '/jobs',
     },
 ];
@@ -45,12 +45,8 @@ export const SOCIAL_LINKS = {
 
 export const SITE_CONFIG = {
     name: 'JEEVANA REKHA',
-    nameTE: 'JEEVANA REKHA',
     domain: 'jeevanarekha.com',
-    description: {
-        te: 'నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.',
-        en: '',
-    },
+    description: 'నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.',
     author: 'Vijayi Software',
 };
 

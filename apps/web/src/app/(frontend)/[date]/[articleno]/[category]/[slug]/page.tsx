@@ -35,7 +35,7 @@ export async function generateMetadata({
         title: article.seo?.title || article.title,
         description: article.seo?.description || article.excerpt,
         lang: 'te',
-        path: `/te/${date}/1/${category}/${slug}`,
+        path: `/${date}/1/${category}/${slug}`,
         image: imageUrl,
         type: 'article',
     });
@@ -56,7 +56,7 @@ export default async function ArticlePage({
 
     const heroImageUrl = getImageUrl(article.heroImage, 'hero');
     const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://jeevanarekha.com';
-    const canonicalUrl = `${baseUrl}/te/${date}/${articleno}/${category}/${slug}`;
+    const canonicalUrl = `${baseUrl}/${date}/${articleno}/${category}/${slug}`;
     const publishDate = new Date(article.publishDate);
     const categorySlug = typeof article.category === 'object' ? article.category.slug : category;
     const authorName =

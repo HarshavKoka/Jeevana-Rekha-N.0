@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { X, Moon, Sun } from 'lucide-react';
 import { NAV_ITEMS } from '../lib/constants';
-import { useLanguage } from '../context/LanguageContext';
+
 import { langPath } from '../lib/url';
 import { useTheme } from '../context/ThemeContext';
 import { usePathname } from 'next/navigation';
@@ -16,7 +16,6 @@ interface MobileDrawerProps {
 }
 
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
-    const { language, toggleLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const pathname = usePathname();
 
@@ -45,7 +44,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-zinc-800">
-                        <Link href={langPath(language, '/')} className="relative h-8 w-40 hover:opacity-90 transition-opacity" onClick={onClose}>
+                        <Link href="/" className="relative h-8 w-40 hover:opacity-90 transition-opacity" onClick={onClose}>
                             <Image
                                 src="/assets/logo.png"
                                 alt="Jeevana Rekha Logo"
@@ -65,7 +64,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
                     {/* Rekha Flash (Mobile) */}
                     <Link
-                        href={langPath(language, '/rekha-flash')}
+                        href="/rekha-flash"
                         className="flex items-center gap-3 px-6 py-4 bg-red-50 dark:bg-red-950/20 border-b border-gray-100 dark:border-zinc-800"
                         onClick={onClose}
                     >
@@ -82,7 +81,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <nav className="flex-1 overflow-y-auto p-6">
                         <ul className="space-y-1">
                             {NAV_ITEMS.filter(item => !item.isFlash).map((item) => {
-                                const fullHref = langPath(language, item.href);
+                                const fullHref = item.href;
                                 const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
                                 return (
                                     <li key={item.href}>
@@ -94,7 +93,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                                                 }`}
                                             onClick={onClose}
                                         >
-                                            {item.label[language]}
+                                            {item.label}
                                             {isActive && (
                                                 <span className="ml-auto w-2 h-2 rounded-full bg-primary" />
                                             )}
@@ -109,7 +108,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <div className="p-6 border-t border-gray-100 dark:border-zinc-800 space-y-4">
                         <div className="flex items-center justify-between group">
                             <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                                {language === 'te' ? 'థీమ్' : 'Theme'}
+                                థీమ్
                             </span>
                             <button
                                 onClick={toggleTheme}

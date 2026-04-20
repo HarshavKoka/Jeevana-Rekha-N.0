@@ -60,8 +60,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           `,
                     }}
                 />
-                <Providers initialLang="te">
-                    <Header lang="te" />
+                <Providers>
+                    <Header />
                     <main className="min-h-screen">
                         {children}
                     </main>

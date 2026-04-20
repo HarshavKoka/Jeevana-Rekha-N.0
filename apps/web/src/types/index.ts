@@ -106,10 +106,7 @@ export interface Video {
 }
 
 export interface NavItem {
-    label: {
-        te: string;
-        en: string;
-    };
+    label: string;
     href: string;
     isFlash?: boolean; // Rekha Flash special styling
     isExternal?: boolean;

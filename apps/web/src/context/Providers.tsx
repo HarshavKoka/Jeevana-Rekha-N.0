@@ -2,20 +2,14 @@
 
 import React from 'react';
 import { ThemeProvider } from './ThemeContext';
-import { LanguageProvider } from './LanguageContext';
-import { Language } from '../types';
-
 interface ProvidersProps {
     children: React.ReactNode;
-    initialLang: Language;
 }
 
-export const Providers: React.FC<ProvidersProps> = ({ children, initialLang }) => {
+export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     return (
-        <LanguageProvider initialLang={initialLang}>
-            <ThemeProvider>
-                {children}
-            </ThemeProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+            {children}
+        </ThemeProvider>
     );
 };
