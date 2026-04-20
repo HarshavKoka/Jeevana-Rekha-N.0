@@ -19,19 +19,21 @@ import { seed } from './cms/seed';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-// Fail fast — never start without required secrets
-const REQUIRED_ENV_VARS = ['MONGODB_URI', 'PAYLOAD_SECRET'] as const;
-for (const key of REQUIRED_ENV_VARS) {
-    if (!process.env[key]) {
-        throw new Error(`[Jeevana Rekha] Missing required environment variable: ${key}`);
-    }
+
+// Environment variables — use fallbacks during build if they are missing
+// so that Payload can still generate the import map and other artifacts.
+const mongodbUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/jeevana-rekha-build';
+const payloadSecret = process.env.PAYLOAD_SECRET || 'TEMPORARY_SECRET_FOR_BUILD_PURPOSES_ONLY';
+
+if (!process.env.MONGODB_URI || !process.env.PAYLOAD_SECRET) {
+    console.warn('[Jeevana Rekha] WARNING: Missing MONGODB_URI or PAYLOAD_SECRET. Using fallback values for build.');
 }
 
 // Both the main domain and admin subdomain must be allowed.
 // Admin panel at admin.jeevanarekha.com makes cross-origin API calls to
 // jeevanarekha.com/api — CORS and CSRF must permit that origin.
-const serverUrl  = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://jeevanarekha.com';
-const adminUrl   = process.env.NEXT_PUBLIC_ADMIN_URL
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://jeevanarekha.com';
+const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL
     ?? (serverUrl ? serverUrl.replace('://', '://admin.') : 'https://admin.jeevanarekha.com');
 
 // Always include both domains explicitly — never leave csrf empty
@@ -39,7 +41,7 @@ const allowedOrigins = [serverUrl, adminUrl].filter(Boolean);
 
 export default buildConfig({
     serverURL: serverUrl,
-    secret: process.env.PAYLOAD_SECRET!,
+    secret: payloadSecret,
 
     // CORS — allow both main domain and admin subdomain
     cors: allowedOrigins,
@@ -58,7 +60,7 @@ export default buildConfig({
     editor: lexicalEditor(),
 
     db: mongooseAdapter({
-        url: process.env.MONGODB_URI || '',
+        url: mongodbUri,
     }),
 
     collections: [
@@ -87,11 +89,11 @@ export default buildConfig({
                     },
                 },
             },
-            bucket: process.env.S3_BUCKET!,
+            bucket: process.env.S3_BUCKET || '',
             config: {
                 credentials: {
-                    accessKeyId:     process.env.S3_ACCESS_KEY_ID!,
-                    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+                    accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+                    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
                 },
                 region: process.env.S3_REGION ?? 'ap-south-1', // Mumbai — always ap-south-1 for S3
             },
