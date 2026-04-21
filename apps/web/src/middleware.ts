@@ -42,45 +42,37 @@ export function middleware(req: NextRequest) {
     // We must read that first, otherwise subdomain detection always fails.
     const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? '';
 
-    // ── Subdomain routing (production only) ──────────────────────────────────
+    // ── Subdomain routing (Production & Vercel) ──────────────────────────────
     //
     //  admin.jeevanarekha.com/*  →  internally rewrites to /admin/*
-    //  jeevanarekha.com/admin/*  →  301 redirect to admin.jeevanarekha.com/*
+    //  jeevanarekha.com/admin/*  →  Returns 404 (Blocked)
     //
-    //  In development (/admin stays accessible at localhost:3000/admin as usual)
     // ─────────────────────────────────────────────────────────────────────────
-    if (process.env.NODE_ENV === 'production') {
-        const isAdminSubdomain = host.startsWith('admin.');
+    const isAdminSubdomain = host.startsWith('admin.');
 
-        if (isAdminSubdomain) {
-            // API calls from Payload admin JS stay at /api/* — do not rewrite.
-            // Rewriting /api/foo → /admin/api/foo would break all CMS data calls.
-            if (pathname.startsWith('/api/')) {
-                return NextResponse.next();
-            }
-
-            // Transparent rewrite: browser keeps admin.jeevanarekha.com URL.
-            // Only change the pathname — never touch the protocol on a rewrite
-            // URL. Changing it causes Next.js to treat it as an external proxy
-            // instead of an internal route, which silently falls back to the
-            // frontend root page and redirects to /te.
-            if (!pathname.startsWith('/admin')) {
-                const url = req.nextUrl.clone();
-                url.pathname = `/admin${pathname === '/' ? '' : pathname}`;
-                return NextResponse.rewrite(url);
-            }
-            return NextResponse.next();
-        }
-
-        // If someone hits jeevanarekha.com/admin/*, send them to the subdomain
+    if (isAdminSubdomain) {
+        // 1. If someone hits admin.jeevanarekha.com/admin/..., strip the /admin
+        //    to keep the URL perfectly clean (e.g. admin.jeevanarekha.com/login)
         if (pathname.startsWith('/admin')) {
-            const proto = req.headers.get('x-forwarded-proto') ?? 'https';
-            const bare = host.replace(/^www\./, '').replace(/:\d+$/, '');
-            return NextResponse.redirect(
-                `${proto}://admin.${bare}${pathname}${req.nextUrl.search}`,
-                { status: 301 },
-            );
+            const cleanPath = pathname.replace(/^\/admin/, '') || '/';
+            const url = req.nextUrl.clone();
+            url.pathname = cleanPath;
+            return NextResponse.redirect(url, 301);
         }
+
+        // 2. Transparant rewrite: browser stays at admin.jeevanarekha.com/path
+        //    while Next.js internally serves /admin/path.
+        if (!pathname.startsWith('/api/')) {
+            const url = req.nextUrl.clone();
+            url.pathname = `/admin${pathname === '/' ? '' : pathname}`;
+            return NextResponse.rewrite(url);
+        }
+        return NextResponse.next();
+    }
+
+    // 3. Block /admin access on the main domain (jeevanarekha.com/admin → 404)
+    if (pathname.startsWith('/admin')) {
+        return new NextResponse(null, { status: 404 });
     }
 
     // ── Default-language redirect ─────────────────────────────────────────────
