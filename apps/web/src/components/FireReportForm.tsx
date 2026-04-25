@@ -1,22 +1,65 @@
 'use client';
 
-import { useState } from 'react';
-import { MapPin, FileText, Camera, Send, CheckCircle2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { MapPin, FileText, Camera, Send, CheckCircle2, X, Loader2 } from 'lucide-react';
 
 export default function FireReportForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     issue: '',
     briefing: '',
   });
+  const [files, setFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles(prev => [...prev, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call to Payload CMS
-    await new Promise(r => setTimeout(r, 1000));
-    console.log('Submitted Report:', formData);
-    setIsSubmitted(true);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('issue', formData.issue);
+      data.append('briefing', formData.briefing);
+      
+      files.forEach((file) => {
+        data.append('files', file);
+      });
+
+      const response = await fetch('/api/fire-report', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Submission failed');
+      }
+
+      setIsSubmitted(true);
+      setFormData({ name: '', issue: '', briefing: '' });
+      setFiles([]);
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -48,6 +91,12 @@ export default function FireReportForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-sm font-bold">
+            {error}
+          </div>
+        )}
+
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300">
             <FileText className="w-4 h-4" /> Name / పేరు
@@ -91,7 +140,10 @@ export default function FireReportForm() {
         </div>
 
         <div className="pt-2">
-          <label className="flex items-center justify-between p-4 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer transition-all">
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center justify-between p-4 border-2 border-dashed border-gray-200 dark:border-zinc-700 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer transition-all"
+          >
             <div className="flex items-center gap-3">
               <Camera className="w-6 h-6 text-gray-400" />
               <div>
@@ -100,15 +152,50 @@ export default function FireReportForm() {
               </div>
             </div>
             <span className="text-xs bg-gray-200 dark:bg-zinc-700 px-3 py-1 rounded-full font-bold">ATTACH</span>
-            <input type="file" className="hidden" multiple accept="image/*" />
-          </label>
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              className="hidden" 
+              multiple 
+              accept="image/*" 
+              onChange={handleFileChange}
+            />
+          </div>
+
+          {files.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {files.map((file, idx) => (
+                <div key={idx} className="flex items-center gap-2 bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-zinc-700">
+                  <span className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-[150px]">{file.name}</span>
+                  <button 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-primary hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-500/20 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+          disabled={isSubmitting}
+          className="w-full bg-primary hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-500/20 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
         >
-          <Send className="w-5 h-5" /> SUBMIT TO REPORTER
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              SUBMITTING...
+            </>
+          ) : (
+            <>
+              <Send className="w-5 h-5" />
+              SUBMIT TO REPORTER
+            </>
+          )}
         </button>
       </form>
     </div>

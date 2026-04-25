@@ -23,10 +23,10 @@ export default function Footer() {
                 {/* ROW 1: BRAND & MISSION */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 mb-12">
                     <div className="space-y-6">
-                        <Link href="/" className="text-3xl font-black font-te text-zinc-900 dark:text-white inline-block hover:opacity-90 transition-opacity tracking-tighter">
+                        <Link href="/" className="site-logo-text text-zinc-900 dark:text-white inline-block hover:opacity-90 transition-opacity tracking-tighter">
                             JEEVANA <span className="text-primary font-black">REKHA</span>
                         </Link>
-                        <p className="max-w-md text-lg leading-relaxed font-te text-zinc-500 dark:text-zinc-400">
+                        <p className="max-w-md hero-summary text-zinc-500 dark:text-zinc-400">
                             నిజాన్ని నిర్భయంగా, నిష్పక్షపాతంగా అందించే తెలుగు వార్తా పోర్టల్.
                         </p>
                         <div className="flex gap-3">
@@ -75,7 +75,7 @@ export default function Footer() {
                         <h4 className="text-[13px] font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
                             విభాగాలు
                         </h4>
-                        <ul className="space-y-4 text-sm font-bold font-te">
+                        <ul className="space-y-4 footer-link">
                             {NAV_ITEMS.filter(i => !i.isFlash).slice(0, 4).map((item) => (
                                 <li key={item.href}>
                                     <Link href={item.href} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
@@ -87,7 +87,7 @@ export default function Footer() {
                     </div>
                     <div className="space-y-6">
                         <h4 className="text-[13px] font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">&nbsp;</h4>
-                        <ul className="space-y-4 text-sm font-bold font-te">
+                        <ul className="space-y-4 footer-link">
                             {NAV_ITEMS.filter(i => !i.isFlash).slice(4).map((item) => (
                                 <li key={item.href}>
                                     <Link href={item.href} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
@@ -101,7 +101,7 @@ export default function Footer() {
                         <h4 className="text-[13px] font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
                             మా కథ
                         </h4>
-                        <ul className="space-y-4 text-sm font-bold font-te">
+                        <ul className="space-y-4 footer-link">
                             {policyLinks.slice(0, 3).map((item) => (
                                 <li key={item.href}>
                                     <Link href={item.href} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors text-base">
@@ -115,7 +115,7 @@ export default function Footer() {
                         <h4 className="text-xs font-black uppercase tracking-[0.25em] text-zinc-900 dark:text-white">
                             పాలసీలు
                         </h4>
-                        <ul className="space-y-4 text-sm font-bold font-te">
+                        <ul className="space-y-4 footer-link">
                             {policyLinks.slice(3).map((item) => (
                                 <li key={item.href}>
                                     <Link href={item.href} className="text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors">
@@ -130,14 +130,14 @@ export default function Footer() {
                 {/* ROW 3: CONTACT & COPYRIGHT */}
                 <div className="mt-16 flex flex-col md:flex-row justify-between items-center gap-10">
                     <div className="space-y-2 text-center md:text-left">
-                        <p className="text-xs font-black uppercase tracking-widest text-primary">contact@jeevanarekha.in</p>
-                        <p className="text-sm font-te text-zinc-500 dark:text-zinc-400">Eluru, Andhra Pradesh, India - 534001</p>
+                        <p className="text-xs font-black uppercase tracking-widest text-primary font-body">contact@jeevanarekha.in</p>
+                        <p className="footer-link text-zinc-500 dark:text-zinc-400">Eluru, Andhra Pradesh, India - 534001</p>
                     </div>
                     <div className="text-center md:text-right space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                        <p className="footer-legal uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
                             © 2026 JEEVANA REKHA. అన్ని హక్కులు ప్రత్యేకించబడినవి.
                         </p>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">
+                        <p className="footer-legal uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">
                             రూపకల్పన <span className="text-zinc-900 dark:text-white">VIJAYI SOFTWARE</span>
                         </p>
                     </div>

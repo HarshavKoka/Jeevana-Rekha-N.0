@@ -48,16 +48,16 @@ export default function HeroArticle({ lang, slug, category, title, excerpt, date
 
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 space-y-6">
-                    <h1 className="text-white text-3xl md:text-5xl lg:text-6xl font-black font-te leading-[1.1] line-clamp-3 max-w-5xl tracking-tight">
+                    <h1 className="hero-headline text-white line-clamp-3 max-w-5xl">
                         {title}
                     </h1>
-                    <p className="text-gray-200 text-lg md:text-2xl font-te line-clamp-2 max-w-4xl opacity-90 group-hover:opacity-100 transition-opacity duration-500 leading-relaxed font-medium">
+                    <p className="hero-summary text-gray-200 line-clamp-2 max-w-4xl opacity-90 group-hover:opacity-100 transition-opacity duration-500">
                         {excerpt}
                     </p>
 
                     <div className="pt-8 flex items-center justify-between border-t border-white/10">
-                        <span className="text-xs md:text-sm text-gray-300 font-bold uppercase tracking-[0.2em]">{date}</span>
-                        <div className="flex items-center gap-3 text-white font-black text-sm md:text-lg uppercase tracking-widest group-hover:gap-5 transition-all">
+                        <span className="metadata-text text-gray-300 uppercase tracking-[0.2em]">{date}</span>
+                        <div className="flex items-center gap-3 text-white font-black text-sm md:text-lg uppercase tracking-widest group-hover:gap-5 transition-all font-body">
                             Read Full Story <span className="text-primary text-2xl md:text-3xl">→</span>
                         </div>
                     </div>

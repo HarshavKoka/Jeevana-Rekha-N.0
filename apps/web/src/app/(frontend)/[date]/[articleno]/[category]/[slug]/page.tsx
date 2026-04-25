@@ -78,21 +78,23 @@ export default async function ArticlePage({
 
             <article className="min-h-screen bg-white dark:bg-zinc-950">
                 {/* ── HERO IMAGE ── */}
-                <div className="relative w-full aspect-[16/7] max-h-[640px] overflow-hidden">
-                    <Image
-                        src={heroImageUrl}
-                        alt={article.title}
-                        fill
-                        className="object-cover"
-                        priority
-                        sizes="100vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-4 lg:px-8 pb-10 space-y-4">
-                        <CategoryBadge category={categorySlug} />
-                        <h1 className="text-white text-3xl md:text-5xl font-black font-te leading-[1.1] tracking-tight">
-                            {article.title}
-                        </h1>
+                <div className="max-w-[1440px] mx-auto px-4 lg:px-10 pt-6 md:pt-10">
+                    <div className="relative w-full aspect-[16/8] md:aspect-[16/7] max-h-[700px] overflow-hidden rounded-3xl shadow-2xl border border-gray-100 dark:border-zinc-800">
+                        <Image
+                            src={heroImageUrl}
+                            alt={article.title}
+                            fill
+                            className="object-cover transition-transform duration-1000 hover:scale-105"
+                            priority
+                            sizes="(max-width: 1440px) 100vw, 1440px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16 space-y-4">
+                            <CategoryBadge category={categorySlug} />
+                            <h1 className="article-title-h1 text-white max-w-5xl">
+                                {article.title}
+                            </h1>
+                        </div>
                     </div>
                 </div>
 
@@ -100,34 +102,39 @@ export default async function ArticlePage({
                 <div className="max-w-4xl mx-auto px-4 lg:px-8 py-12 space-y-10">
 
                     {/* Meta row */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-zinc-800">
-                        <div className="space-y-1">
-                            <time
-                                dateTime={publishDate.toISOString()}
-                                className="text-sm font-bold uppercase tracking-widest text-gray-400"
-                            >
-                                {publishDate.toLocaleDateString('te-IN', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                })}
-                            </time>
-                            <p className="text-xs text-gray-400 dark:text-zinc-600 uppercase tracking-wider">
-                                {authorName}
+                    <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-gray-100 dark:border-zinc-800">
+                        <div className="space-y-2">
+                            <p className="font-body text-[15px] font-bold text-zinc-900 dark:text-white">
+                                By <span className="text-primary">{authorName}</span>, Jeevana Rekha
                             </p>
+                            <div className="flex flex-wrap items-center gap-2 metadata-text uppercase tracking-widest">
+                                <span>ELURU, Andhra Pradesh, India</span>
+                                <span className="text-gray-300 dark:text-zinc-700">—</span>
+                                <time dateTime={publishDate.toISOString()}>
+                                    {publishDate.toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                    })}, {publishDate.toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false,
+                                    })} IST
+                                </time>
+                            </div>
                         </div>
                         <ShareButtons title={article.title} url={canonicalUrl} />
                     </div>
 
                     {/* Excerpt */}
                     {article.excerpt && (
-                        <p className="text-xl md:text-2xl font-te text-gray-600 dark:text-zinc-300 leading-relaxed border-l-4 border-primary pl-6">
+                        <p className="article-deck text-gray-600 dark:text-zinc-300 border-l-4 border-primary pl-6">
                             {article.excerpt}
                         </p>
                     )}
 
                     {/* Content blocks */}
-                    <div className="prose prose-lg prose-zinc dark:prose-invert max-w-none font-te">
+                    <div className="article-body prose prose-lg prose-zinc dark:prose-invert max-w-none">
                         {article.content?.map((block, i) => (
                             <ContentBlockRenderer key={i} block={block} />
                         ))}
@@ -215,7 +222,7 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
     switch (block.blockType) {
         case 'hero':
             return (
-                <h2 className="text-2xl md:text-3xl font-black font-te text-zinc-900 dark:text-white leading-snug mt-10 mb-4">
+                <h2 className="article-h2 text-zinc-900 dark:text-white">
                     {block.text}
                 </h2>
             );
@@ -238,7 +245,7 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
                         />
                     </div>
                     {block.caption && (
-                        <figcaption className="text-center text-sm text-gray-500 dark:text-zinc-500 font-te italic">
+                        <figcaption className="text-center metadata-text text-gray-500 dark:text-zinc-500 italic">
                             {block.caption}
                         </figcaption>
                     )}
@@ -248,8 +255,8 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
 
         case 'quote':
             return (
-                <blockquote className="my-8 pl-6 border-l-4 border-primary space-y-2">
-                    <p className="text-xl font-te text-zinc-700 dark:text-zinc-200 italic leading-relaxed">
+                <blockquote className="pull-quote">
+                    <p className="italic">
                         &ldquo;{block.text}&rdquo;
                     </p>
                     {block.attribution && (
@@ -292,14 +299,15 @@ function LexicalNode({ node }: { node: LexicalNode }) {
     switch (node.type) {
         case 'paragraph':
             return (
-                <p className="my-4 text-lg font-te text-zinc-800 dark:text-zinc-200 leading-[1.9]">
+                <p className="article-body text-zinc-800 dark:text-zinc-200 my-6">
                     {node.children?.map((child, i) => <LexicalLeaf key={i} node={child} />)}
                 </p>
             );
         case 'heading': {
             const Tag = (node.tag || 'h2') as 'h1' | 'h2' | 'h3' | 'h4';
+            const className = Tag === 'h2' ? 'article-h2' : 'article-h3';
             return (
-                <Tag className="font-black font-te text-zinc-900 dark:text-white mt-10 mb-4 leading-snug">
+                <Tag className={`${className} text-zinc-900 dark:text-white`}>
                     {node.children?.map((child, i) => <LexicalLeaf key={i} node={child} />)}
                 </Tag>
             );

@@ -35,7 +35,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
                 {/* Google Fonts */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Montserrat:wght@500;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Serif+Telugu:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;700&display=swap" rel="stylesheet" />
                 <link rel="icon" href="/assets/favicon.png" type="image/png" />
             </head>
             <body className="antialiased">

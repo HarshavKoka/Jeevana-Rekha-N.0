@@ -3,22 +3,21 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #FF0000;
+  --color-primary: var(--primary);
   --color-primary-foreground: #FFFFFF;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-card-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-foreground: var(--foreground);
   --color-border: var(--border);
 
-  --font-te: "Noto Serif Telugu", "Merriweather", serif;
-  --font-te-sans: "Noto Sans Telugu", "Roboto", sans-serif;
-  --font-label: "Montserrat", sans-serif;
+  --font-head: var(--font-head-family, "Ramabhadra", sans-serif);
+  --font-body: var(--font-body-family, "Noto Sans Telugu", sans-serif);
 
   --radius-card: 1.5rem;
   --radius-button: 9999px;
@@ -30,31 +29,26 @@
 }
 
 :root {
+  --primary: #FF0000;
   --background: #ffffff;
   --foreground: #09090b;
   --card: #ffffff;
-  --card-foreground: #09090b;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
   --accent: #f4f4f5;
-  --accent-foreground: #18181b;
   --border: #e4e4e7;
-  --primary: #FF0000;
-  --primary-foreground: #ffffff;
+  --font-head-family: "Ramabhadra";
+  --font-body-family: "Noto Sans Telugu";
 }
 
 [data-theme='dark'] {
   --background: #09090b;
   --foreground: #fafafa;
   --card: #09090b;
-  --card-foreground: #fafafa;
   --muted: #27272a;
   --muted-foreground: #a1a1aa;
   --accent: #27272a;
-  --accent-foreground: #fafafa;
   --border: #27272a;
-  --primary: #FF0000;
-  --primary-foreground: #ffffff;
 }
 
 @layer base {
@@ -62,172 +56,112 @@
     @apply border-zinc-200 dark:border-zinc-800 outline-none;
   }
 
-  a,
-  button,
-  [role="button"],
-  input[type="button"],
-  input[type="submit"] {
-    cursor: pointer !important;
-  }
-
   body {
-    @apply bg-background text-foreground transition-colors duration-700 ease-in-out;
+    @apply bg-background text-foreground transition-colors duration-700 ease-in-out font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
+    line-height: 1.75;
   }
 
-  /* ELITE THEME ENFORCEMENT */
-  .dark body,
-  [data-theme="dark"] body {
-    background-color: #09090b;
-    /* zinc-950 */
-    color: #f4f4f5;
-    /* zinc-100 */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-head tracking-tight;
   }
 
-  /* FORCED COMPLIANCE FOR HEADER & FOOTER */
-  [data-theme="dark"] header,
-  .dark header {
-    background-color: rgba(9, 9, 11, 0.9) !important;
-    border-color: #27272a !important;
+  /* HOME PAGE RULES */
+  .hero-headline {
+    @apply font-head text-[26px] md:text-[36px] lg:text-[42px];
+    line-height: 1.25;
+  }
+  .hero-summary {
+    @apply font-body text-[18px] md:text-[20px];
+    line-height: 1.75;
+  }
+  .top-story-title {
+    @apply font-head text-[18px] md:text-[22px] lg:text-[26px];
+    line-height: 1.4;
+  }
+  .card-title-reg {
+    @apply font-head text-[16px] md:text-[18px] lg:text-[20px];
+    line-height: 1.4;
+  }
+  .card-excerpt {
+    @apply font-body text-[15px] md:text-[16px];
+    line-height: 1.75;
+  }
+  .category-label {
+    @apply font-body text-[12px] md:text-[13px] font-bold uppercase tracking-wider;
+    line-height: 1.3;
+  }
+  .metadata-text {
+    @apply font-body text-[13px] text-muted-foreground;
+    line-height: 1.3;
   }
 
-  [data-theme="dark"] footer,
-  .dark footer {
-    background-color: #09090b !important;
-    border-color: #27272a !important;
-    color: #a1a1aa !important;
-    /* zinc-400 */
+  /* SECTION PAGE RULES */
+  .section-banner-head {
+    @apply font-head text-[22px] md:text-[28px] lg:text-[32px];
+    line-height: 1.3;
+  }
+  .lead-story-title {
+    @apply font-head text-[20px] md:text-[24px] lg:text-[28px];
+    line-height: 1.4;
+  }
+  .grid-card-title {
+    @apply font-head text-[17px] md:text-[19px];
+    line-height: 1.4;
   }
 
-  [data-theme="dark"] nav,
-  .dark nav {
-    border-color: #18181b !important;
-    /* zinc-900 */
+  /* ARTICLE PAGE RULES */
+  .article-title-h1 {
+    @apply font-head text-[24px] md:text-[32px] lg:text-[36px];
+    line-height: 1.2;
+  }
+  .article-deck {
+    @apply font-body text-[18px] md:text-[20px] italic text-muted-foreground;
+    line-height: 1.6;
+  }
+  .article-body {
+    @apply font-body text-[16px] md:text-[18px];
+    line-height: 1.8;
+  }
+  .pull-quote {
+    @apply font-head text-[22px] md:text-[24px] text-primary border-l-4 border-primary pl-6 my-8;
+    line-height: 1.4;
+  }
+  .article-h2 {
+    @apply font-head text-[24px] mt-10 mb-4;
+    line-height: 1.3;
+  }
+  .article-h3 {
+    @apply font-head text-[20px] mt-8 mb-3;
+    line-height: 1.3;
   }
 
-  /* Smooth scale transition for language switch */
-  .lang-transition {
-    @apply transition-all duration-500 transform-gpu;
+  /* NAV & GLOBAL UI */
+  .nav-link {
+    @apply font-body text-[15px] md:text-[16px] font-medium;
   }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-te tracking-tight;
+  .site-logo-text {
+    @apply font-head text-[24px] md:text-[28px];
+  }
+  .footer-link {
+    @apply font-body text-[13px] md:text-[14px];
+  }
+  .footer-legal {
+    @apply font-body text-[12px];
   }
 }
 
 @layer components {
-  .page-enter {
-    animation: page-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
   .hover-lift {
     @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-card-hover cursor-pointer;
   }
-
-  .article-card {
-    @apply transition-all duration-500 transform-gpu hover:scale-[1.01] cursor-pointer;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
-
-/* ─── KEYFRAMES ────────────────────────────────────── */
-
-@keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .glass {
+    @apply bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-white/20 dark:border-white/5;
   }
 }
 
 @keyframes flash-slide {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ─── TELUGU TYPOGRAPHY ─────────────────────────────── */
-
-.font-te {
-  line-height: 1.5;
-}
-
-[lang="te"] body {
-  word-break: keep-all;
-}
-
-/* ─── GLASSMORPHISM ─────────────────────────────────── */
-
-.glass {
-  @apply bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-white/20 dark:border-white/5;
-}
-
-/* ─── SCROLLBAR ─────────────────────────────────────── */
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-zinc-800 rounded-full border-4 border-transparent bg-clip-content hover:bg-gray-300 dark:hover:bg-zinc-700 cursor-pointer;
-}
-
-/* ─── ICON FIX ──────────────────────────────────────── */
-
-svg {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* ─── CMS THEME VARS ────────────────────────────────── */
-/*
- * These rules sit outside any @layer, so they have the
- * highest cascade priority and safely override Tailwind utilities.
- *
- * --site-font-base   : set by layout.tsx from ThemeSettings.bodyFontSize
- * --heading-tracking : set by layout.tsx from ThemeSettings.headingScale
- * --heading-leading  : set by layout.tsx from ThemeSettings.headingScale
- *
- * Defaults here are the fallbacks when the CMS returns no data.
- */
-html {
-  font-size: var(--site-font-base, 16px);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  letter-spacing: var(--heading-tracking, -0.025em);
-  line-height: var(--heading-leading, 1.1);
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
 }

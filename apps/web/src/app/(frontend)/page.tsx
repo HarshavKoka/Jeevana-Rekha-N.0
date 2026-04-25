@@ -5,6 +5,7 @@ import { Language } from '@/types';
 import { getArticles, getTrendingArticles, getFeaturedArticle, getCategories } from '@/lib/payload-client';
 import { generateSEO } from '@/lib/seo';
 import { buildArticleUrl, getImageUrl } from '@/lib/url';
+import { SOCIAL_LINKS } from '@/lib/constants';
 import CategoryBadge from '@/components/CategoryBadge';
 import VideoCard from '@/components/VideoCard';
 
@@ -45,7 +46,7 @@ export default async function HomePage() {
                     {/* TODAY SECTION (70%) */}
                     <div className="space-y-8">
                         <Link href={`/${todayStr}/today`} className="group flex items-center gap-4 border-b-4 border-primary pb-2 w-fit">
-                            <span className="text-4xl md:text-5xl font-black font-te tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
+                            <span className="text-4xl md:text-5xl font-head tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
                                 నేడు
                             </span>
                             <span className="text-primary text-4xl group-hover:translate-x-2 transition-transform">→</span>
@@ -70,10 +71,10 @@ export default async function HomePage() {
                                         {typeof hero.category === 'object' && (
                                             <CategoryBadge category={hero.category.slug} />
                                         )}
-                                        <h1 className="text-white text-3xl md:text-5xl lg:text-6xl font-black font-te leading-[1.05] line-clamp-3 tracking-tight">
+                                        <h1 className="hero-headline text-white max-w-5xl">
                                             {hero.title}
                                         </h1>
-                                        <p className="text-zinc-200 text-lg md:text-xl font-te line-clamp-2 max-w-4xl opacity-90">
+                                        <p className="hero-summary text-zinc-200 line-clamp-2 max-w-4xl opacity-90">
                                             {hero.excerpt}
                                         </p>
                                     </div>
@@ -96,7 +97,7 @@ export default async function HomePage() {
                                             className="object-cover group-hover:scale-110 transition-transform duration-700"
                                         />
                                     </div>
-                                    <h3 className="text-xl font-bold font-te line-clamp-2 group-hover:text-primary transition-colors text-zinc-900 dark:text-white">
+                                    <h3 className="top-story-title group-hover:text-primary transition-colors text-zinc-900 dark:text-white">
                                         {article.title}
                                     </h3>
                                 </Link>
@@ -118,14 +119,14 @@ export default async function HomePage() {
                                     href={buildArticleUrl('te', article, idx + 1, 'trending')}
                                     className="article-card group flex gap-5 items-start"
                                 >
-                                    <span className="text-5xl font-black text-primary/10 group-hover:text-primary transition-colors leading-none italic">
+                                    <span className="text-5xl font-head text-primary/10 group-hover:text-primary transition-colors leading-none italic">
                                         {idx + 1}
                                     </span>
                                     <div className="space-y-1">
-                                        <h3 className="text-lg font-black font-te text-zinc-800 dark:text-white line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                                        <h3 className="card-title-reg text-zinc-800 dark:text-white line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                                             {article.title}
                                         </h3>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                        <span className="metadata-text">
                                             {new Date(article.publishDate).toLocaleDateString('te-IN', { month: 'short', day: 'numeric' })}
                                         </span>
                                     </div>
@@ -143,8 +144,8 @@ export default async function HomePage() {
                         {/* PREVIOUS DAY (60%) */}
                         <div className="space-y-10">
                             <Link href={`/${todayStr}/previous-days`} className="group flex items-center gap-4">
-                                <h2 className="text-3xl md:text-4xl font-black font-te tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
-                                    గత <span className="text-primary italic">రోజులు</span>
+                                <h2 className="text-3xl md:text-4xl font-head tracking-tighter text-zinc-900 dark:text-white group-hover:text-primary transition-all duration-300 uppercase">
+                                    గత <span className="text-primary">రోజులు</span>
                                 </h2>
                                 <span className="text-primary text-3xl group-hover:translate-x-2 transition-transform">→</span>
                             </Link>
@@ -154,7 +155,7 @@ export default async function HomePage() {
                                         <div className="relative aspect-video rounded-2xl overflow-hidden mb-4">
                                             <Image src={getImageUrl(article.heroImage, 'card')} alt={article.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                         </div>
-                                        <h3 className="text-lg font-bold font-te line-clamp-2 text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
+                                        <h3 className="grid-card-title text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
                                             {article.title}
                                         </h3>
                                     </Link>
@@ -166,7 +167,7 @@ export default async function HomePage() {
                         <div className="space-y-10">
                             <Link href="/weekly-roundup" className="group flex items-center justify-between bg-zinc-900 dark:bg-zinc-800 text-white p-8 rounded-[3rem] shadow-2xl hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all border-b-8 border-primary">
                                 <div>
-                                    <h2 className="text-3xl font-black font-te tracking-tighter uppercase leading-none">
+                                    <h2 className="text-3xl font-head tracking-tighter uppercase leading-none">
                                         వారపు<br /><span className="text-primary italic">సమీక్ష</span>
                                     </h2>
                                     <p className="text-zinc-400 text-xs mt-3 uppercase tracking-widest font-bold">
@@ -199,17 +200,58 @@ export default async function HomePage() {
             {/* ─── VIDEO SECTION ─── */}
             <section className="max-w-[1700px] mx-auto px-4 lg:px-10 xl:px-20 py-24 md:py-32 space-y-12">
                 <div className="flex items-center justify-between border-b-2 border-zinc-100 dark:border-zinc-800 pb-8">
-                    <h2 className="text-4xl md:text-5xl font-black font-te tracking-tighter text-zinc-900 dark:text-white uppercase transition-all duration-500">
+                    <h2 className="section-banner-head text-zinc-900 dark:text-white uppercase transition-all duration-500">
                         రేఖా <span className="text-red-600">వాచ్</span>
                     </h2>
-                    <Link href="/videos" className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-primary transition-colors">
-                        అన్ని వీడియోలు చూడండి
-                    </Link>
+                    <a 
+                        href={SOCIAL_LINKS.youtube} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 hover:text-primary transition-colors font-body"
+                    >
+                        YouTube ఛానల్ చూడండి
+                    </a>
                 </div>
-                <div className="flex gap-8 overflow-x-auto pb-12 snap-x hide-scrollbar">
-                    <VideoCard title="JEEVANA REKHA: Truth, Resilience, Responsibility" date="March 2026" />
-                    <VideoCard title="Weekly Political Roundup: Andhra Pradesh Analysis" date="Feb 2026" />
-                    <VideoCard title="Tech Flash: Future of AI in Newsroom" date="Feb 2026" />
+                
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div className="lg:col-span-8 relative group cursor-pointer overflow-hidden rounded-[2.5rem] shadow-2xl">
+                        <div className="aspect-video relative">
+                            <Image 
+                                src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=2000" 
+                                alt="Jeevana Rekha YouTube" 
+                                fill 
+                                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <a 
+                                    href={SOCIAL_LINKS.youtube}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-24 h-24 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 hover:scale-110 group-hover:bg-red-700"
+                                >
+                                    <svg className="w-10 h-10 ml-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-4 space-y-8">
+                        <div className="space-y-4">
+                            <h3 className="text-3xl font-head leading-tight text-zinc-900 dark:text-white">
+                                నిజాన్ని నిర్భయంగా చూపిస్తూ.. మీ జీవన రేఖ!
+                            </h3>
+                            <p className="hero-summary text-zinc-500 dark:text-zinc-400">
+                                తాజా వార్తలు, లోతైన విశ్లేషణలు మరియు ప్రత్యేక ఇంటర్వ్యూల కోసం మా YouTube ఛానల్‌ని సబ్‌స్క్రైబ్ చేయండి.
+                            </p>
+                        </div>
+                        <a 
+                            href={SOCIAL_LINKS.youtube}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-4 bg-red-600 text-white px-8 py-4 rounded-full font-bold hover:bg-red-700 transition-all shadow-xl hover:shadow-red-600/20"
+                        >
+                            SUBSCRIBE NOW <span className="text-xl">🔔</span>
+                        </a>
+                    </div>
                 </div>
             </section>
         </div>

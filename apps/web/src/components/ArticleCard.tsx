@@ -50,19 +50,18 @@ export default function ArticleCard({ lang, slug, category, title, excerpt, date
 
             {/* Middle/Bottom: Content */}
             <div className={`p-6 ${isSidebar ? 'absolute bottom-0 left-0 right-0 p-8' : ''}`}>
-                <h3 className={`font-bold font-te leading-tight line-clamp-2 transition-colors duration-300 group-hover:text-primary ${isSidebar ? 'text-white text-xl md:text-2xl' : 'text-gray-900 dark:text-gray-100 text-lg md:text-xl'
-                    }`}>
+                <h3 className={`line-clamp-2 transition-colors duration-300 group-hover:text-primary ${isSidebar ? 'text-white text-xl md:text-2xl font-head' : 'card-title-reg'}`}>
                     {title}
                 </h3>
 
                 {!isSidebar && (
                     <>
-                        <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm font-te line-clamp-2 leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity">
+                        <p className="mt-4 card-excerpt line-clamp-2 opacity-90 group-hover:opacity-100 transition-opacity">
                             {excerpt}
                         </p>
                         <div className="mt-6 pt-5 flex items-center justify-between border-t border-gray-50 dark:border-zinc-800/50">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{date}</span>
-                            <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            <span className="metadata-text">{date}</span>
+                            <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform font-body">
                                 Read More <span className="text-lg">→</span>
                             </span>
                         </div>

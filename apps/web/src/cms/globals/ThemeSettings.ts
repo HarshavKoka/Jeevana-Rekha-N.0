@@ -22,80 +22,71 @@ export const ThemeSettings: GlobalConfig = {
                             type: 'text',
                             label: 'Primary Color',
                             defaultValue: '#FF0000',
-                            admin: {
-                                description: 'Main accent color — used for links, badges, highlights, and borders (hex value, e.g. #FF0000).',
-                            },
                         },
                         {
                             name: 'secondaryColor',
                             type: 'text',
                             label: 'Secondary Color',
                             defaultValue: '#0B3D91',
-                            admin: {
-                                description: 'Supporting brand color for secondary elements (hex value, e.g. #0B3D91).',
-                            },
+                        },
+                        {
+                            name: 'backgroundColor',
+                            type: 'text',
+                            label: 'Background Color',
+                            defaultValue: '#ffffff',
+                        },
+                        {
+                            name: 'cardColor',
+                            type: 'text',
+                            label: 'Card Background',
+                            defaultValue: '#ffffff',
+                        },
+                        {
+                            name: 'textColor',
+                            type: 'text',
+                            label: 'Main Text Color',
+                            defaultValue: '#09090b',
+                        },
+                        {
+                            name: 'mutedTextColor',
+                            type: 'text',
+                            label: 'Muted Text Color',
+                            defaultValue: '#71717a',
                         },
                     ],
                 },
                 {
                     label: 'Font Sizes',
-                    description: 'Controls the base text scale for the entire site. All sizes adjust proportionally.',
+                    description: 'Controls the base text scale.',
                     fields: [
                         {
                             name: 'bodyFontSize',
                             type: 'select',
-                            label: 'Text Scale',
+                            label: 'Base Font Size',
                             defaultValue: 'medium',
-                            required: true,
                             options: [
-                                { label: 'Small  (14 px) — Compact reading', value: 'small' },
-                                { label: 'Medium (16 px) — Default', value: 'medium' },
-                                { label: 'Large  (18 px) — Accessibility', value: 'large' },
+                                { label: 'Small (14px)', value: 'small' },
+                                { label: 'Medium (16px)', value: 'medium' },
+                                { label: 'Large (18px)', value: 'large' },
                             ],
-                            admin: {
-                                description:
-                                    'Sets the root font size. All text on the site — body copy, headings, captions — scales proportionally with this setting.',
-                            },
-                        },
-                        {
-                            name: 'headingScale',
-                            type: 'select',
-                            label: 'Heading Style',
-                            defaultValue: 'normal',
-                            required: true,
-                            options: [
-                                { label: 'Compact — Tight tracking, dense headlines', value: 'compact' },
-                                { label: 'Normal  — Default editorial style', value: 'normal' },
-                                { label: 'Spacious — Open tracking, airy headlines', value: 'spacious' },
-                            ],
-                            admin: {
-                                description:
-                                    'Controls letter-spacing and line-height on all headings. Does not override the font size set by Text Scale.',
-                            },
                         },
                     ],
                 },
                 {
                     label: 'Fonts',
-                    description: 'Typeface names loaded from Google Fonts.',
+                    description: 'Google Font names.',
                     fields: [
                         {
-                            name: 'fontHeadingTelugu',
+                            name: 'fontHeading',
                             type: 'text',
-                            label: 'Telugu Heading Font',
-                            defaultValue: 'Noto Serif Telugu',
-                            admin: {
-                                description: 'Google Font name used for all Telugu headlines (e.g. "Noto Serif Telugu").',
-                            },
+                            label: 'Heading Font',
+                            defaultValue: 'Ramabhadra',
                         },
                         {
-                            name: 'fontHeadingEnglish',
+                            name: 'fontBody',
                             type: 'text',
-                            label: 'English Heading Font',
-                            defaultValue: 'Merriweather',
-                            admin: {
-                                description: 'Google Font name used for English headlines (e.g. "Merriweather").',
-                            },
+                            label: 'Body Font',
+                            defaultValue: 'Noto Sans Telugu',
                         },
                     ],
                 },

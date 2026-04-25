@@ -227,7 +227,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={fullHref}
-                  className={`relative py-3 font-black font-te uppercase tracking-[0.12em] transition-all duration-300 text-base ${
+                  className={`relative py-3 transition-all duration-300 nav-link ${
                     isActive
                       ? 'text-primary'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-primary'

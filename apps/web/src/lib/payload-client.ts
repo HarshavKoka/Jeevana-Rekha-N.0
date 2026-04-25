@@ -245,10 +245,14 @@ export const getCategories = unstable_cache(
 export type ThemeSettingsData = {
     primaryColor?: string;
     secondaryColor?: string;
+    backgroundColor?: string;
+    cardColor?: string;
+    textColor?: string;
+    mutedTextColor?: string;
     bodyFontSize?: 'small' | 'medium' | 'large';
     headingScale?: 'compact' | 'normal' | 'spacious';
-    fontHeadingTelugu?: string;
-    fontHeadingEnglish?: string;
+    fontHeading?: string;
+    fontBody?: string;
 };
 
 const FONT_SIZE_MAP: Record<string, string> = {
@@ -281,8 +285,15 @@ export const getThemeSettings = unstable_cache(
 
 /** Converts ThemeSettingsData into an inline CSS string for <style> injection. */
 export function buildThemeCss(theme: ThemeSettingsData): string {
-    const primary   = theme.primaryColor   ?? '#FF0000';
-    const secondary = theme.secondaryColor ?? '#0B3D91';
+    const primary    = theme.primaryColor    ?? '#FF0000';
+    const secondary  = theme.secondaryColor  ?? '#0B3D91';
+    const background = theme.backgroundColor ?? '#ffffff';
+    const card       = theme.cardColor       ?? '#ffffff';
+    const text       = theme.textColor       ?? '#09090b';
+    const muted      = theme.mutedTextColor  ?? '#71717a';
+    const fontHead   = theme.fontHeading     ?? 'Ramabhadra';
+    const fontBody   = theme.fontBody        ?? 'Noto Sans Telugu';
+    
     const fontSize  = FONT_SIZE_MAP[theme.bodyFontSize ?? 'medium'] ?? '16px';
     const headStyle = HEADING_SCALE_MAP[theme.headingScale ?? 'normal'] ?? HEADING_SCALE_MAP.normal;
 
@@ -290,6 +301,12 @@ export function buildThemeCss(theme: ThemeSettingsData): string {
         ':root{',
         `--primary:${primary};`,
         `--secondary:${secondary};`,
+        `--background:${background};`,
+        `--card:${card};`,
+        `--foreground:${text};`,
+        `--muted-foreground:${muted};`,
+        `--font-head-family:"${fontHead}", sans-serif;`,
+        `--font-body-family:"${fontBody}", sans-serif;`,
         `--site-font-base:${fontSize};`,
         `--heading-tracking:${headStyle.tracking};`,
         `--heading-leading:${headStyle.leading};`,
