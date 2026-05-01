@@ -38,7 +38,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
                 <link href="https://fonts.googleapis.com/css2?family=Ramabhadra&family=Noto+Sans+Telugu:wght@400;500;700&display=swap" rel="stylesheet" />
                 <link rel="icon" href="/assets/favicon.png" type="image/png" />
             </head>
-            <body className="antialiased">
+            <body className="antialiased bg-[#F7F8FA] dark:bg-[#0D0D0D] text-[#1A1A1A] dark:text-[#FFFFFF] transition-colors duration-500">
                 <Script
                     id="theme-initializer"
                     strategy="beforeInteractive"

@@ -4,14 +4,18 @@
 
 @theme {
   --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
   --color-primary-foreground: #FFFFFF;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-headline: var(--headline);
   --color-card: var(--card);
+  --color-card-white: var(--card-white);
   --color-card-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-timestamp: var(--timestamp);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--foreground);
   --color-border: var(--border);
@@ -19,41 +23,47 @@
   --font-head: var(--font-head-family, "Ramabhadra", sans-serif);
   --font-body: var(--font-body-family, "Noto Sans Telugu", sans-serif);
 
-  --radius-card: 1.5rem;
-  --radius-button: 9999px;
+  --radius-card: 1rem;
+  --radius-button: 0.5rem;
 
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-  --shadow-card-hover: 0 20px 50px -12px rgba(255, 0, 0, 0.15);
+  --shadow-card: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 15px 35px -10px rgba(200, 16, 46, 0.1);
 
   --animate-flash-slide: flash-slide 0.5s ease-out forwards;
 }
 
 :root {
-  --primary: #FF0000;
-  --background: #ffffff;
-  --foreground: #09090b;
-  --card: #ffffff;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --border: #e4e4e7;
+  --primary: #C8102E;
+  --primary-deep: #A00D24;
+  --background: #F7F8FA;
+  --foreground: #1A1A1A;
+  --headline: #0D0D0D;
+  --card: #F2F3F5;
+  --card-white: #FFFFFF;
+  --muted: #F2F3F5;
+  --muted-foreground: #6B6B6B;
+  --timestamp: #9A9A9A;
+  --accent: #F2F3F5;
+  --border: #D8DADC;
   --font-head-family: "Ramabhadra";
   --font-body-family: "Noto Sans Telugu";
 }
 
 [data-theme='dark'] {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #09090b;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --border: #27272a;
+  --background: #0D0D0D;
+  --foreground: #F7F8FA;
+  --headline: #FFFFFF;
+  --card: #1A1A1A;
+  --card-white: #1A1A1A;
+  --muted: #1A1A1A;
+  --muted-foreground: #9A9A9A;
+  --accent: #1A1A1A;
+  --border: #333333;
 }
 
 @layer base {
   * {
-    @apply border-zinc-200 dark:border-zinc-800 outline-none;
+    @apply border-border outline-none;
   }
 
   body {
@@ -63,77 +73,95 @@
     line-height: 1.75;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-head tracking-tight;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-head tracking-tight text-headline font-bold;
   }
 
   /* HOME PAGE RULES */
   .hero-headline {
-    @apply font-head text-[26px] md:text-[36px] lg:text-[42px];
+    @apply font-head text-[26px] md:text-[36px] lg:text-[42px] text-headline font-bold;
     line-height: 1.25;
   }
+
   .hero-summary {
-    @apply font-body text-[18px] md:text-[20px];
+    @apply font-body text-[18px] md:text-[20px] text-foreground opacity-90;
     line-height: 1.75;
   }
+
   .top-story-title {
-    @apply font-head text-[18px] md:text-[22px] lg:text-[26px];
+    @apply font-head text-[18px] md:text-[22px] lg:text-[26px] text-headline font-bold;
     line-height: 1.4;
   }
+
   .card-title-reg {
-    @apply font-head text-[16px] md:text-[18px] lg:text-[20px];
+    @apply font-head text-[16px] md:text-[18px] lg:text-[20px] text-headline font-bold;
     line-height: 1.4;
   }
+
   .card-excerpt {
-    @apply font-body text-[15px] md:text-[16px];
+    @apply font-body text-[15px] md:text-[16px] text-foreground opacity-80;
     line-height: 1.75;
   }
+
   .category-label {
-    @apply font-body text-[12px] md:text-[13px] font-bold uppercase tracking-wider;
+    @apply font-body text-[12px] md:text-[13px] font-black uppercase tracking-wider text-primary;
     line-height: 1.3;
   }
+
   .metadata-text {
-    @apply font-body text-[13px] text-muted-foreground;
+    @apply font-body text-[13px] text-timestamp;
     line-height: 1.3;
   }
 
   /* SECTION PAGE RULES */
   .section-banner-head {
-    @apply font-head text-[22px] md:text-[28px] lg:text-[32px];
+    @apply font-head text-[22px] md:text-[28px] lg:text-[32px] text-headline font-bold;
     line-height: 1.3;
   }
+
   .lead-story-title {
-    @apply font-head text-[20px] md:text-[24px] lg:text-[28px];
+    @apply font-head text-[20px] md:text-[24px] lg:text-[28px] text-headline font-bold;
     line-height: 1.4;
   }
+
   .grid-card-title {
-    @apply font-head text-[17px] md:text-[19px];
+    @apply font-head text-[17px] md:text-[19px] text-headline font-bold;
     line-height: 1.4;
   }
 
   /* ARTICLE PAGE RULES */
   .article-title-h1 {
-    @apply font-head text-[24px] md:text-[32px] lg:text-[36px];
+    @apply font-head text-[24px] md:text-[32px] lg:text-[36px] text-headline font-bold;
     line-height: 1.2;
   }
+
   .article-deck {
     @apply font-body text-[18px] md:text-[20px] italic text-muted-foreground;
     line-height: 1.6;
   }
+
   .article-body {
-    @apply font-body text-[16px] md:text-[18px];
+    @apply font-body text-[16px] md:text-[18px] text-foreground;
     line-height: 1.8;
   }
+
   .pull-quote {
-    @apply font-head text-[22px] md:text-[24px] text-primary border-l-4 border-primary pl-6 my-8;
+    @apply font-head text-[22px] md:text-[24px] text-primary border-l-4 border-primary pl-6 my-8 font-bold;
     line-height: 1.4;
   }
+
   .article-h2 {
-    @apply font-head text-[24px] mt-10 mb-4;
+    @apply font-head text-[24px] mt-10 mb-4 text-headline font-bold;
     line-height: 1.3;
   }
+
   .article-h3 {
-    @apply font-head text-[20px] mt-8 mb-3;
+    @apply font-head text-[20px] mt-8 mb-3 text-headline font-bold;
     line-height: 1.3;
   }
 
@@ -141,14 +169,17 @@
   .nav-link {
     @apply font-body text-[15px] md:text-[16px] font-medium;
   }
+
   .site-logo-text {
-    @apply font-head text-[24px] md:text-[28px];
+    @apply font-head text-[24px] md:text-[28px] text-headline font-black;
   }
+
   .footer-link {
-    @apply font-body text-[13px] md:text-[14px];
+    @apply font-body text-[13px] md:text-[14px] text-muted-foreground;
   }
+
   .footer-legal {
-    @apply font-body text-[12px];
+    @apply font-body text-[12px] text-timestamp;
   }
 }
 
@@ -156,12 +187,20 @@
   .hover-lift {
     @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-card-hover cursor-pointer;
   }
+
   .glass {
     @apply bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-white/20 dark:border-white/5;
   }
 }
 
 @keyframes flash-slide {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

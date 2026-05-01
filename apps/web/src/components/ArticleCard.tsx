@@ -21,11 +21,11 @@ export default function ArticleCard({ lang, slug, category, title, excerpt, date
     return (
         <Link
             href={href}
-            className="group block bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-gray-100 dark:border-zinc-800"
+            className="group block bg-card-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-border dark:border-zinc-800"
         >
             {/* Top: Image */}
             <div className={`relative ${isSidebar ? 'aspect-[3/4]' : 'aspect-square md:aspect-[4/3]'} w-full overflow-hidden`}>
-                <div className="absolute inset-0 bg-gray-100 dark:bg-zinc-800">
+                <div className="absolute inset-0 bg-background dark:bg-zinc-800">
                     {image ? (
                         <Image
                             src={image}
@@ -35,7 +35,7 @@ export default function ArticleCard({ lang, slug, category, title, excerpt, date
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] bg-gray-50 dark:bg-zinc-900/50 italic">
+                        <div className="w-full h-full flex items-center justify-center text-timestamp font-bold text-[10px] uppercase tracking-[0.2em] bg-card dark:bg-zinc-900/50 italic">
                             Jeevana Rekha News
                         </div>
                     )}
@@ -44,7 +44,7 @@ export default function ArticleCard({ lang, slug, category, title, excerpt, date
                     <CategoryBadge label={category} />
                 </div>
                 {isSidebar && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D]/80 via-[#0D0D0D]/20 to-transparent"></div>
                 )}
             </div>
 
@@ -56,10 +56,10 @@ export default function ArticleCard({ lang, slug, category, title, excerpt, date
 
                 {!isSidebar && (
                     <>
-                        <p className="mt-4 card-excerpt line-clamp-2 opacity-90 group-hover:opacity-100 transition-opacity">
+                        <p className="mt-4 card-excerpt line-clamp-2 transition-opacity">
                             {excerpt}
                         </p>
-                        <div className="mt-6 pt-5 flex items-center justify-between border-t border-gray-50 dark:border-zinc-800/50">
+                        <div className="mt-6 pt-5 flex items-center justify-between border-t border-border dark:border-zinc-800/50">
                             <span className="metadata-text">{date}</span>
                             <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform font-body">
                                 Read More <span className="text-lg">→</span>

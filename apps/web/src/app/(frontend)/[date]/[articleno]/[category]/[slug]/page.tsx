@@ -104,8 +104,8 @@ export default async function ArticlePage({
                     {/* Meta row */}
                     <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-gray-100 dark:border-zinc-800">
                         <div className="space-y-2">
-                            <p className="font-body text-[15px] font-bold text-zinc-900 dark:text-white">
-                                By <span className="text-primary">{authorName}</span>, Jeevana Rekha
+                            <p className="font-body text-[15px] font-bold text-[#6B6B6B]">
+                                By <span className="text-[#6B6B6B]">{authorName}</span>, Jeevana Rekha
                             </p>
                             <div className="flex flex-wrap items-center gap-2 metadata-text uppercase tracking-widest">
                                 <span>ELURU, Andhra Pradesh, India</span>

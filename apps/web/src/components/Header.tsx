@@ -70,22 +70,18 @@ export default function Header() {
   const regularItems = NAV_ITEMS.filter(item => !item.isFlash);
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-700 border-b ${isScrolled
-      ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md py-2 shadow-sm border-gray-100 dark:border-zinc-800'
-      : 'bg-white dark:bg-zinc-950 py-3 border-transparent'
-      }`}>
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-10">
-
-        {/* TOP ROW: Logo and Controls */}
-        <div className="flex items-center justify-between h-12 md:h-14">
+    <>
+      {/* STICKY TOP ROW (Header) */}
+      <div className="w-full sticky top-0 z-50 bg-[#F7F8FA] dark:bg-[#0D0D0D] border-b border-[#6B6B6B] dark:border-[#6B6B6B] transition-colors duration-500 shadow-sm">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-10 py-4 flex items-center justify-between">
 
           {/* MOBILE: Hamburger trigger */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"
+            className="lg:hidden p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Open menu"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-6 h-6 text-[#1A1A1A] dark:text-[#FFFFFF]" />
           </button>
 
           {/* DESKTOP LEFT: Settings hamburger + dropdown */}
@@ -94,11 +90,10 @@ export default function Header() {
               onClick={() => setIsSettingsOpen(prev => !prev)}
               aria-label="Open settings"
               aria-expanded={isSettingsOpen}
-              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 ${
-                isSettingsOpen
-                  ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900'
-                  : 'bg-transparent border-gray-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900'
-              }`}
+              className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all duration-300 cursor-pointer ${isSettingsOpen
+                ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white dark:bg-white dark:border-white dark:text-[#1A1A1A]'
+                : 'bg-transparent border-[#1A1A1A]/20 dark:border-white/20 text-[#1A1A1A] dark:text-[#FFFFFF] hover:border-[#1A1A1A]/50 dark:hover:border-white/50 hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
             >
               {isSettingsOpen
                 ? <X className="w-4 h-4" />
@@ -135,17 +130,15 @@ export default function Header() {
                       <button
                         onClick={toggleTheme}
                         aria-label="Toggle theme"
-                        className={`relative w-14 h-7 rounded-full border transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                          theme === 'dark'
-                            ? 'bg-zinc-800 border-zinc-700'
-                            : 'bg-gray-100 border-gray-200'
-                        }`}
+                        className={`relative w-14 h-7 rounded-full border transition-all duration-500 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${theme === 'dark'
+                          ? 'bg-zinc-800 border-zinc-700'
+                          : 'bg-gray-100 border-gray-200'
+                          }`}
                       >
-                        <span className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md flex items-center justify-center transition-all duration-500 ${
-                          theme === 'dark'
-                            ? 'translate-x-7 bg-zinc-700'
-                            : 'translate-x-0 bg-white'
-                        }`}>
+                        <span className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md flex items-center justify-center transition-all duration-500 ${theme === 'dark'
+                          ? 'translate-x-7 bg-zinc-700'
+                          : 'translate-x-0 bg-white'
+                          }`}>
                           {theme === 'dark'
                             ? <Sun className="w-3.5 h-3.5 text-amber-400" />
                             : <Moon className="w-3.5 h-3.5 text-zinc-500" />
@@ -153,6 +146,19 @@ export default function Header() {
                         </span>
                       </button>
                     </div>
+                  </div>
+
+                  {/* Navigation Links in Settings Menu */}
+                  <div className="px-4 py-2 border-t border-gray-100 dark:border-zinc-800">
+                    <ul className="space-y-2 py-2">
+                      {regularItems.map(item => (
+                        <li key={item.href}>
+                          <Link href={item.href} onClick={() => setIsSettingsOpen(false)} className="text-sm font-bold text-zinc-900 dark:text-white hover:text-primary transition-colors block">
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
                 </div>
@@ -185,20 +191,20 @@ export default function Header() {
                 className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-200"
               >
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-zinc-500 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A1A]/50 dark:text-white/50 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="వెతకండి..."
-                    className="w-52 xl:w-64 pl-9 pr-4 py-2 text-sm font-te rounded-full border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
+                    className="w-52 xl:w-64 pl-9 pr-4 py-2 text-sm font-te rounded-full border border-[#1A1A1A]/20 dark:border-white/20 bg-white/50 dark:bg-black/50 text-[#1A1A1A] dark:text-[#FFFFFF] placeholder-[#1A1A1A]/40 dark:placeholder-white/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
-                  className="flex items-center justify-center w-8 h-8 rounded-full text-gray-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-200"
+                  className="flex items-center justify-center w-8 h-8 rounded-full text-[#1A1A1A]/50 dark:text-white/50 hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 cursor-pointer"
                   aria-label="Close search"
                 >
                   <X className="w-4 h-4" />
@@ -208,40 +214,42 @@ export default function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Search"
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white transition-all duration-300"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-[#1A1A1A]/20 dark:border-white/20 text-[#1A1A1A]/70 dark:text-[#FFFFFF]/70 hover:border-[#1A1A1A]/50 dark:hover:border-white/50 hover:bg-black/5 dark:hover:bg-white/5 hover:text-[#1A1A1A] dark:hover:text-[#FFFFFF] transition-all duration-300 cursor-pointer"
               >
                 <Search className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
+      </div>
 
-        {/* BOTTOM ROW: Navigation (Desktop) */}
-        <nav className="hidden lg:flex justify-center items-center py-4 border-t border-gray-100 dark:border-zinc-900">
-          <div className="flex items-center gap-12 xl:gap-16">
-            {flashItem && <RekhaFlash />}
-            {regularItems.map((item) => {
-              const fullHref = item.href;
-              const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
-              return (
-                <Link
-                  key={item.href}
-                  href={fullHref}
-                  className={`relative py-3 transition-all duration-300 nav-link ${
-                    isActive
-                      ? 'text-primary'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-primary'
-                  }`}
-                >
-                  {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-1 left-0 w-full h-1 bg-primary rounded-full" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
+      {/* NON-STICKY BOTTOM ROW (Navbar) */}
+      <div className="w-full bg-[#F7F8FA] dark:bg-[#0D0D0D] border-b-[3px] border-[#6B6B6B] dark:border-[#6B6B6B] transition-colors duration-500 relative z-40">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-10 py-3 hidden lg:flex justify-center items-center">
+          <nav>
+            <div className="flex items-center gap-12 xl:gap-16">
+              {regularItems.map((item) => {
+                const fullHref = item.href;
+                const isActive = pathname === fullHref || pathname.startsWith(fullHref + '/');
+                return (
+                  <Link
+                    key={item.href}
+                    href={fullHref}
+                    className={`relative py-1 transition-all duration-300 nav-link font-head ${isActive
+                      ? 'text-primary font-bold'
+                      : 'text-[#1A1A1A]/80 dark:text-zinc-400 hover:text-primary dark:hover:text-primary'
+                      }`}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span className="absolute -bottom-4 left-0 w-full h-1 bg-primary" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
       </div>
 
       {/* MOBILE DRAWER */}
@@ -249,6 +257,6 @@ export default function Header() {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
       />
-    </header>
+    </>
   );
 }

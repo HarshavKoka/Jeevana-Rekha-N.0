@@ -54,39 +54,16 @@ export default function RekhaFlash() {
     }, [headlines.length]);
 
     return (
-        <div className="flex items-center gap-4 shrink-0 overflow-hidden max-w-[200px] xl:max-w-[300px]">
-            {/* Blinking Red Dot + Label */}
-            <Link
-                href="/rekha-flash"
-                className="flex items-center gap-2 group transition-all duration-300"
-            >
-                <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+        <div className="w-full">
+            {/* Clean Heading with Blinking Red Dot */}
+            <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8102E] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-[#C8102E]"></span>
                 </span>
-                <span className="nav-link text-red-600 group-hover:text-red-700 whitespace-nowrap">
-                    రేఖ ఫ్లాష్
-                </span>
-            </Link>
-
-            {/* Separator */}
-            <div className="h-4 w-[1px] bg-gray-200 dark:bg-zinc-800" />
-
-            {/* Scrolling Headlines */}
-            <div className="relative h-5 flex-1 overflow-hidden">
-                {headlines.map((h, i) => (
-                    <Link
-                        key={h.id}
-                        href={`/rekha-flash#${h.slug}`}
-                        className={`absolute inset-0 transition-all duration-700 nav-link text-zinc-500 dark:text-zinc-400 hover:text-primary whitespace-nowrap overflow-hidden text-ellipsis ${
-                            i === currentIndex 
-                                ? 'translate-y-0 opacity-100' 
-                                : 'translate-y-full opacity-0'
-                        }`}
-                    >
-                        {h.title}
-                    </Link>
-                ))}
+                <h2 className="text-xl font-head tracking-tighter uppercase text-[#1A1A1A] dark:text-[#FFFFFF] leading-none">
+                    రేఖా ఫ్లాష్
+                </h2>
             </div>
         </div>
     );

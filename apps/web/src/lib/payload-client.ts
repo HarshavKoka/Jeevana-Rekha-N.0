@@ -285,13 +285,13 @@ export const getThemeSettings = unstable_cache(
 
 /** Converts ThemeSettingsData into an inline CSS string for <style> injection. */
 export function buildThemeCss(theme: ThemeSettingsData): string {
-    const primary    = theme.primaryColor    ?? '#FF0000';
-    const secondary  = theme.secondaryColor  ?? '#0B3D91';
-    const background = theme.backgroundColor ?? '#ffffff';
-    const card       = theme.cardColor       ?? '#ffffff';
-    const text       = theme.textColor       ?? '#09090b';
-    const muted      = theme.mutedTextColor  ?? '#71717a';
-    const fontHead   = theme.fontHeading     ?? 'Ramabhadra';
+    const primary    = theme.primaryColor    ?? '#C8102E';
+    const secondary  = theme.secondaryColor  ?? '#A00D24';
+    const background = theme.backgroundColor ?? '#F7F8FA';
+    const card       = theme.cardColor       ?? '#F2F3F5';
+    const text       = theme.textColor       ?? '#1A1A1A';
+    const muted      = theme.mutedTextColor  ?? '#6B6B6B';
+    const fontHead   = theme.fontHeading     ?? 'Noto Sans Telugu';
     const fontBody   = theme.fontBody        ?? 'Noto Sans Telugu';
     
     const fontSize  = FONT_SIZE_MAP[theme.bodyFontSize ?? 'medium'] ?? '16px';

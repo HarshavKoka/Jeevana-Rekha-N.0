@@ -55,7 +55,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                         </Link>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"
+                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
                             aria-label="Close menu"
                         >
                             <X className="w-6 h-6" />
@@ -112,7 +112,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                             </span>
                             <button
                                 onClick={toggleTheme}
-                                className="relative w-14 h-7 rounded-full bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 transition-all duration-500 shadow-inner overflow-hidden"
+                                className="relative w-14 h-7 rounded-full bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 transition-all duration-500 shadow-inner overflow-hidden cursor-pointer"
                             >
                                 <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white dark:bg-zinc-800 shadow transform transition-all duration-500 flex items-center justify-center ${theme === 'dark' ? 'translate-x-7' : 'translate-x-0'
                                     }`}>
